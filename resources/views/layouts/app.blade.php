@@ -18,12 +18,14 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/main.css') }}" rel="stylesheet">
 </head>
 <body>
 
 @include('layouts.menu')
 
 <main class="py-4 container">
+    @include('helpers.message', ['name' => 'alert', 'importance' => 'danger'])
     @yield('content')
 </main>
 </body>

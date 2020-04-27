@@ -2,14 +2,7 @@
 
 @section('content')
     <h1>Races list</h1>
-    @if(session()->has('message'))
-        <div class="alert alert-success alert-dismissible">
-            {{ session()->get('message') }}
-            <button type="button" class="close" data-dismiss="alert">
-                <span>&times;</span>
-            </button>
-        </div>
-    @endif
+    @include('helpers.message', ['name' => 'message', 'importance' => 'success'])
     <table class="table table-sm table-hover table-striped">
         <thead>
         <tr>

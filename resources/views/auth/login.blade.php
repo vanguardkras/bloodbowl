@@ -11,6 +11,15 @@
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
+                        <div class="form-group row mb-3">
+                            <div class="col-md-6 offset-md-4">
+                                <a href="/login/vkontakte" class="btn btn-info btn-sm w-100">
+                                    {{ __('Login via') }}
+                                    <img class="vk_icon" src="/img/social_media/vk.svg" alt="VK">
+                                </a>
+                            </div>
+                        </div>
+
                         <div class="form-group row">
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Coach Name') }}</label>
 
@@ -58,7 +67,7 @@
                                 </button>
 
                                 @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
+                                    <a class="btn btn-link btn-sm" href="{{ route('password.request') }}">
                                         {{ __('Forgot Your Password?') }}
                                     </a>
                                 @endif

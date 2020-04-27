@@ -1,0 +1,14 @@
+.form-control,
+.btn-group-sm>.btn, .btn-sm,
+.btn,
+.dropdown-menu {
+    border-radius: 0;
+}
+
+.vk_icon {
+    bottom: 2px;
+    fill: #ffffff;
+    height: 16px;
+    margin-left: 5px;
+    position: relative;
+}

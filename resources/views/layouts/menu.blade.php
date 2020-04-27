@@ -25,11 +25,16 @@
     <ul class="navbar-nav ml-auto">
         @auth
             <li class="nav-item dropdown">
-                <a id="navbarDropdown" class="nav-link dropdown-toggle small" href="#" role="button" data-toggle="dropdown">
-                    {{ Auth::user()->username }} <span class="caret"></span>
+                <a id="navbarDropdown" class="nav-link dropdown-toggle small" href="#" role="button"
+                   data-toggle="dropdown">
+                    {{ Auth::user()->name ?: __('auth.nameless_user') }} <span class="caret"></span>
                 </a>
 
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/profile">
+                        {{ __('Profile') }}
+                    </a>
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item small" href="{{ route('logout') }}"
                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -42,13 +47,17 @@
                 </div>
             </li>
         @else
-            <li class="nav-item">
-                <a class="nav-link small" href="{{ route('login') }}">{{ __('Login') }}</a>
-            </li>
-            @if (Route::has('register'))
+            @if (!request()->is('login'))
                 <li class="nav-item">
-                    <a class="nav-link small" href="{{ route('register') }}">{{ __('Register') }}</a>
+                    <a class="nav-link small" href="{{ route('login') }}">{{ __('Login') }}</a>
                 </li>
+            @endif
+            @if (Route::has('register'))
+                @if (!request()->is('register'))
+                    <li class="nav-item">
+                        <a class="nav-link small" href="{{ route('register') }}">{{ __('Register') }}</a>
+                    </li>
+                @endif
             @endif
         @endauth
     </ul>
