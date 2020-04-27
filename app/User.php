@@ -14,6 +14,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string $email_verified_at
  * @property string $password
  * @property string $is_super
+ * @property string $vk_id
  *
  * @package App
  */

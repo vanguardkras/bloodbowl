@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\VkAuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,13 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'PageController@main');
 
 Auth::routes(['verify' => true]);
 
-Route::get('login/vkontakte', 'Auth\LoginController@redirectToProvider');
-Route::get('login/vkontakte/callback', 'Auth\LoginController@handleProviderCallback');
+Route::get('login/vkontakte', 'Auth\VkAuthController@vkLogin');
+Route::get(VkAuthController::REDIRECT_URI, 'Auth\VkAuthController@vkCallback');
 
 Route::resource('races', 'SuperAdmin\RaceController')->middleware('is_super');

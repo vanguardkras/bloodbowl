@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->boolean('is_super')->default(false);
+            $table->string('vk_id')->nullable();
             $table->timestamps();
         });
 

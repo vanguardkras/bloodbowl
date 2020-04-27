@@ -18,10 +18,6 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        SocialiteWasCalled::class => [
-            // add your listeners (aka providers) here
-            'SocialiteProviders\\VKontakte\\VKontakteExtendSocialite@handle',
-        ],
     ];
 
     /**
