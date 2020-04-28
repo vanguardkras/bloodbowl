@@ -26,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        if (request()->getPreferredLanguage() === 'ru_RU') {
+            $this->app->setLocale('ru');
+        }
     }
 }

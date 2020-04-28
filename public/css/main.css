@@ -1,8 +1,47 @@
 .form-control,
 .btn-group-sm>.btn, .btn-sm,
 .btn,
-.dropdown-menu {
+.dropdown-menu,
+.card {
     border-radius: 0;
+}
+
+.action_image_container {
+    cursor: pointer;
+}
+
+.action_image_container input[type="file"] {
+    display: none;
+}
+
+.action_image_container:hover .hover_action,
+.action_image_container:hover .hover_action_text {
+    display: block;
+}
+
+.action_image_container:hover .action_image {
+    opacity: .3;
+}
+
+.hover_action {
+    display: none;
+    position: absolute;
+    right: 75px;
+    top: 75px;
+}
+
+.hover_action_text {
+    color: #eb6864;
+    display: none;
+    font-weight: bold;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 10px;
+}
+
+.team_card {
+    width: 200px;
 }
 
 .vk_icon {

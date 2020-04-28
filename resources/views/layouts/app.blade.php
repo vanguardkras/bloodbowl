@@ -26,6 +26,7 @@
 
 <main class="py-4 container">
     @include('helpers.message', ['name' => 'alert', 'importance' => 'danger'])
+    @include('helpers.message', ['name' => 'success', 'importance' => 'success'])
     @yield('content')
 </main>
 </body>

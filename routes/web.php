@@ -14,11 +14,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Pages route
 Route::get('/', 'PageController@main');
 
+//Auth routes
 Auth::routes(['verify' => true]);
-
 Route::get('login/vkontakte', 'Auth\VkAuthController@vkLogin');
 Route::get(VkAuthController::REDIRECT_URI, 'Auth\VkAuthController@vkCallback');
 
+// Super Admin routes
 Route::resource('races', 'SuperAdmin\RaceController')->middleware('is_super');
+
+// Profile routes
+Route::middleware('auth')->group(function () {
+    Route::get('profile', 'UserController@profile')->middleware('auth');
+    Route::patch('profile_data_update', 'UserController@updateData');
+    Route::patch('change_password', 'UserController@changePassword');
+});
+
+// Teams management routes
+Route::resource('teams', 'TeamController');
+

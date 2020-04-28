@@ -3,12 +3,14 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <a class="navbar-brand" href="/">BLOODBOWL.RU</a>
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="/">{{ __('pages.menu.main') }}</a>
+                <a class="nav-link" href="/">{{ __('menu.main') }}</a>
             </li>
             @auth
+                <li class="nav-item active">
+                    <a class="nav-link" href="/teams">{{ __('menu.teams') }}</a>
+                </li>
                 @if(auth()->user()->isSuper())
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown">
@@ -27,12 +29,16 @@
             <li class="nav-item dropdown">
                 <a id="navbarDropdown" class="nav-link dropdown-toggle small" href="#" role="button"
                    data-toggle="dropdown">
-                    {{ Auth::user()->name ?: __('auth.nameless_user') }} <span class="caret"></span>
+                    {{ auth()->user()->name ?: __('auth.nameless_user') }}
+                    @if (!auth()->user()->name)
+                    (ID: {{ auth()->user()->id }})
+                    @endif
+                    <span class="caret"></span>
                 </a>
 
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="/profile">
-                        {{ __('Profile') }}
+                        {{ __('menu.profile') }}
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item small" href="{{ route('logout') }}"

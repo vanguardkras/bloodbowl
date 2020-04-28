@@ -26,11 +26,7 @@
                             <div class="col-md-6">
                                 <input type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
 
-                                @error('username')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                @include('helpers.input_error', ['field_name' => 'username'])
                             </div>
                         </div>
 
@@ -40,11 +36,7 @@
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
 
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                @include('helpers.input_error', ['field_name' => 'password'])
                             </div>
                         </div>
 
