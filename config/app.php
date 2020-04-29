@@ -228,4 +228,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
     ],
+
+    'max_teams' => 15,
 ];

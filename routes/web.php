@@ -33,5 +33,5 @@ Route::middleware('auth')->group(function () {
 });
 
 // Teams management routes
-Route::resource('teams', 'TeamController');
+Route::resource('teams', 'TeamController')->except('edit');
 

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,6 +29,12 @@ class AppServiceProvider extends ServiceProvider
     {
         if (request()->getPreferredLanguage() === 'ru_RU') {
             $this->app->setLocale('ru');
+        }
+
+        if (env('DB_DEBUG')) {
+            DB::listen(function ($query) {
+                dump($query->sql);
+            });
         }
     }
 }

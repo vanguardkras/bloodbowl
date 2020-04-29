@@ -15,7 +15,7 @@
                        placeholder="{{ __('profile.coach_name_placeholder') }}"
                        value="{{ $user->name }}" required>
                 @include('helpers.input_error', ['field_name' => 'name'])
-                <small class="form-text text-muted pb-2">
+                @include('helpers.input_error', ['field_name' => 'name'])<small class="form-text text-muted pb-2">
                     {{ __('profile.coach_name_desc') }}
                     @if(!$user->name)
                         {{ __('profile.coach_name_add_desc') }}

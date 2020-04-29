@@ -2,7 +2,9 @@
 
 namespace App;
 
+use App\Models\Team;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -13,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string $email
  * @property string $email_verified_at
  * @property string $password
+ * @property HasMany $teams
  * @property string $is_super
  * @property string $vk_id
  *
@@ -57,5 +60,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isSuper()
     {
         return $this->is_super;
+    }
+
+    /**
+     * Get current user teams.
+     *
+     * @return HasMany
+     */
+    public function teams()
+    {
+        return $this->hasMany(Team::class);
     }
 }

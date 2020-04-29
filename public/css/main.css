@@ -2,8 +2,15 @@
 .btn-group-sm>.btn, .btn-sm,
 .btn,
 .dropdown-menu,
-.card {
+.card,
+.custom-select,
+.custom-file-input {
     border-radius: 0;
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 .action_image_container {

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Profile;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProfileUpdateRequest extends FormRequest
+class TeamCreateRequest extends FormRequest
 {
     /**
      * Get custom attributes for validator errors.
@@ -14,7 +14,8 @@ class ProfileUpdateRequest extends FormRequest
     public function attributes()
     {
         return [
-            'name' => __('profile.coach_name'),
+            'name' => __('teams.name'),
+            'race_id' => __('teams.race_attribute'),
         ];
     }
 
@@ -36,7 +37,8 @@ class ProfileUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:users,name',
+            'name' => 'required|max:250|unique:teams,name',
+            'race_id' => 'required|exists:races,id',
         ];
     }
 }
