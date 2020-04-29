@@ -7,6 +7,7 @@ use App\Models\Race;
 use App\Models\Team;
 use App\Services\ImageUploader;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TeamController extends Controller
 {
@@ -120,7 +121,13 @@ class TeamController extends Controller
         }
 
         $name = $team->name;
+
+        if($team->logo) {
+            Storage::disk('public')->delete($team->logo);
+        }
+
         $team->delete();
+
         return back()->with('success', __(
             'teams.delete_success_msg',
             ['name' => $name]

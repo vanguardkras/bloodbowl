@@ -34,7 +34,7 @@ class ImageUploader
 
         $imageResize = new ImageResize($image);
         $imageResize->crop(200, 200);
-        $imageResize->save($filePath . DIRECTORY_SEPARATOR . $fileRandomName, IMAGETYPE_JPEG, 90);
+        $imageResize->save($filePath . DIRECTORY_SEPARATOR . $fileRandomName, IMAGETYPE_JPEG, 90, 755);
 
         if ($oldImage) {
             Storage::disk('public')->delete($oldImage);
