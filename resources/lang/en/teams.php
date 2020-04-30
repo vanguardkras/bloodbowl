@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'are_you_sure' => 'Are you sure you want to delete your team? The team data will be erased completely.',
     'count_limit_msg' => 'You already have maximum number of teams per user (:max). Remove teams you don\'t use to create a new one',
     'create' => 'Create',
     'delete' => 'Delete',

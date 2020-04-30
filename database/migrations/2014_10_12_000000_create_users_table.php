@@ -24,6 +24,7 @@ class CreateUsersTable extends Migration
             $table->string('password')->nullable();
             $table->rememberToken();
             $table->boolean('is_super')->default(false);
+            $table->boolean('commissioner')->default(false);
             $table->string('vk_id')->nullable();
             $table->timestamps();
         });

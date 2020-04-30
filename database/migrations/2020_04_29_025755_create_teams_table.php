@@ -20,6 +20,10 @@ class CreateTeamsTable extends Migration
             $table->foreignId('race_id')->constrained()->onDelete('cascade');
             $table->string('logo')->nullable();
             $table->unsignedBigInteger('competition_id')->nullable();
+            $table->unsignedInteger('touchdowns')->default(0);
+            $table->unsignedInteger('played')->default(0);
+            $table->unsignedInteger('wins')->default(0);
+            $table->unsignedInteger('draws')->default(0);
             $table->timestamps();
         });
     }

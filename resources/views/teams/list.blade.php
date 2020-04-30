@@ -29,7 +29,8 @@
                             <form action="/teams/{{ $team->id }}" method="post">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger w-100">
+                                <button type="submit" class="btn btn-danger w-100"
+                                onclick="return confirm('{{ __('teams.are_you_sure') }}')">
                                     {{ __('teams.delete') }}
                                 </button>
                             </form>
