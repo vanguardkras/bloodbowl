@@ -4,13 +4,18 @@
 .dropdown-menu,
 .card,
 .custom-select,
-.custom-file-input {
+.custom-file-input,
+.custom-file-label {
     border-radius: 0;
 }
 
 select {
     -webkit-appearance: none;
     -moz-appearance: none;
+}
+
+textarea {
+    resize: none;
 }
 
 .action_image_container {

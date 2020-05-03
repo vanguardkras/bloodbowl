@@ -16,7 +16,7 @@
             </div>
             <label for="race_id">{{ __('teams.race') }}</label>
             <select class="custom-select mb-3" id="race_id" name="race_id" required>
-                @foreach ($races as $race)
+                @foreach (races() as $race)
                     <option value="{{ $race->id }}">{{ $race->name }}</option>
                 @endforeach
             </select>

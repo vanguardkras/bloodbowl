@@ -81,49 +81,56 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./resources/js/teams_list.js":
-/*!************************************!*\
-  !*** ./resources/js/teams_list.js ***!
-  \************************************/
+/***/ "./resources/js/competition_create.js":
+/*!********************************************!*\
+  !*** ./resources/js/competition_create.js ***!
+  \********************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-$('.logo_upload').change(function () {
-  var data = new FormData();
-  var file = $(this)[0].files[0];
-  var element = $(this).closest('.team_logo_upload');
-  var id = element.find('input[name="team_id"]').val();
-  data.append('logo', file);
-  data.append('_method', 'PATCH');
-  $.ajax({
-    url: '/teams/' + id,
-    dataType: 'text',
-    cache: false,
-    contentType: false,
-    processData: false,
-    data: data,
-    type: 'post',
-    success: function success(new_path) {
-      element.find('.card-img-top').attr('src', '/storage/' + new_path);
+showHideCheckbox('#any_max_teams', '#max_teams');
+showHideCheckbox('#any_max_games', '#max_games');
+showHideCheckbox('#any_max_one_team_games', '#max_one_team_games');
+showHideCheckbox('#open_league_wo_po', '#open_league_play_off');
+showHideCheckbox('#group_rounds_wo_po', '#group_rounds_play_off');
+showCompetitionTypeSettings();
+$('#type').change(function () {
+  showCompetitionTypeSettings();
+});
+
+function showHideCheckbox(checkboxId, elementId) {
+  $(checkboxId).change(function () {
+    var element = $(elementId);
+
+    if ($(this)[0].checked) {
+      element.addClass('d-none');
+    } else {
+      element.removeClass('d-none');
     }
   });
-});
+}
+
+function showCompetitionTypeSettings() {
+  var type = $('#type').val();
+  $('.competition_type_settings').addClass('d-none');
+  $('#' + type).removeClass('d-none');
+}
 
 /***/ }),
 
-/***/ 3:
-/*!******************************************!*\
-  !*** multi ./resources/js/teams_list.js ***!
-  \******************************************/
+/***/ 2:
+/*!**************************************************!*\
+  !*** multi ./resources/js/competition_create.js ***!
+  \**************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\Users\vanguard\Desktop\www\bloodbowl.ru\resources\js\teams_list.js */"./resources/js/teams_list.js");
+module.exports = __webpack_require__(/*! C:\Users\vanguard\Desktop\www\bloodbowl.ru\resources\js\competition_create.js */"./resources/js/competition_create.js");
 
 
 /***/ })

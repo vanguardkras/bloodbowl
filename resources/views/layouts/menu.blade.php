@@ -4,13 +4,18 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="/">{{ __('menu.main') }}</a>
             </li>
             @auth
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a class="nav-link" href="/teams">{{ __('menu.teams') }}</a>
                 </li>
+                @if (auth()->user()->commissioner)
+                    <li class="nav-item">
+                        <a class="nav-link" href="/competitions">{{ __('menu.competitions') }}</a>
+                    </li>
+                @endif
                 @if(auth()->user()->isSuper())
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown">
@@ -31,7 +36,7 @@
                    data-toggle="dropdown">
                     {{ auth()->user()->name ?: __('auth.nameless_user') }}
                     @if (!auth()->user()->name)
-                    (ID: {{ auth()->user()->id }})
+                        (ID: {{ auth()->user()->id }})
                     @endif
                     <span class="caret"></span>
                 </a>

@@ -41,17 +41,30 @@
                 @method('PATCH')
                 <div class="form-group pl-0">
                     <label for="old_password">{{ __('profile.old_password') }}</label>
-                    <input type="password" class="@error('old_password') is-invalid @enderror form-control" id="old_password" name="old_password" required>
+                    <input type="password" class="@error('old_password') is-invalid @enderror form-control"
+                           id="old_password" name="old_password" required>
                     @include('helpers.input_error', ['field_name' => 'old_password'])
                     <label for="new_password">{{ __('profile.new_password') }}</label>
-                    <input type="password" class="@error('new_password') is-invalid @enderror form-control mb-3" id="new_password" name="new_password" required>
+                    <input type="password" class="@error('new_password') is-invalid @enderror form-control mb-3"
+                           id="new_password" name="new_password" required>
                     @include('helpers.input_error', ['field_name' => 'new_password'])
                     <button type="submit" class="btn btn-primary">{{ __('profile.change') }}</button>
                 </div>
             </form>
         @elseif($user->vk_id)
-            <h5>{{ __('profile.vk_link') }}: <a href="https://vk.com/id{{ $user->vk_id }}"
-                                                target="_blank">id{{ $user->vk_id }}</a></h5>
+            <h5 class="mb-4">{{ __('profile.vk_link') }}: <a href="https://vk.com/id{{ $user->vk_id }}"
+                                                             target="_blank">id{{ $user->vk_id }}</a></h5>
+        @endif
+        @if(!auth()->user()->commissioner)
+            <hr>
+            <p class="small">{{ __('profile.commissioner_text') }}</p>
+            <form action="become_commissioner" method="post">
+                @csrf
+                @method('PATCH')
+                <button type="submit" class="btn btn-primary btn-sm">
+                    {{ __('profile.commissioner_button') }}
+                </button>
+            </form>
         @endif
     </div>
 @endsection

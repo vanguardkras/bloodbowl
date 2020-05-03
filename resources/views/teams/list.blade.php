@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="mb-3">Your teams</h1>
+    <h1 class="mb-3">{{ __('teams.header') }}</h1>
     <a class="mb-3 btn btn-primary btn-lg" style="width: 200px" href="/teams/create" role="button">
-        {{ __('teams.header') }}
+        {{ __('teams.button') }}
     </a>
     <div class="row">
         @foreach ($teams as $team)

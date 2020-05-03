@@ -19914,7 +19914,14 @@ $.ajaxSetup({
   headers: {
     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
   }
-});
+}); // Menu active item
+
+var page = window.location.pathname.split('/')[1];
+$('a[href*="' + page + '"].nav-link').addClass('active');
+
+if (page === '') {
+  $('a[href="/"]').addClass('active');
+}
 
 /***/ }),
 

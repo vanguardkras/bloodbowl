@@ -1,5 +1,6 @@
 {
     "/js/app.js": "/js/app.js",
+    "/js/competition_create.js": "/js/competition_create.js",
     "/js/datatable.js": "/js/datatable.js",
     "/js/teams_list.js": "/js/teams_list.js"
 }

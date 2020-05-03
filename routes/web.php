@@ -30,8 +30,12 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', 'UserController@profile')->middleware('auth');
     Route::patch('profile_data_update', 'UserController@updateData');
     Route::patch('change_password', 'UserController@changePassword');
+    Route::patch('become_commissioner', 'UserController@becomeCommissioner');
 });
 
 // Teams management routes
 Route::resource('teams', 'TeamController')->except('edit');
+
+//Competitons routes
+Route::resource('competitions', 'CompetitionController')->middleware('commissioner');
 
