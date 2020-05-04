@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CompetitionCreateRequest;
+use App\Http\Requests\CompetitionSaveRequest;
 use App\Models\Competition;
 use App\Services\ImageUploader;
-use Illuminate\Http\Request;
 
 class CompetitionController extends Controller
 {
@@ -16,7 +15,8 @@ class CompetitionController extends Controller
      */
     public function index()
     {
-        return view('competitions.list');
+        $competitions = auth()->user()->competitions;
+        return view('competitions.list', compact('competitions'));
     }
 
     /**
@@ -26,7 +26,8 @@ class CompetitionController extends Controller
      */
     public function create()
     {
-        return view('competitions.create');
+        $types = competitionTypes();
+        return view('competitions.create', compact('types'));
     }
 
     /**
@@ -38,13 +39,13 @@ class CompetitionController extends Controller
      * @throws \ReflectionException
      * @throws \App\Services\CompetitionStrategy\CompetitionStrategyException
      */
-    public function store(CompetitionCreateRequest $request)
+    public function store(CompetitionSaveRequest $request)
     {
         $competition = new Competition($request->all());
         $competition->setStrategy();
         $competition->fillParameters();
         $competition->user_id = auth()->user()->id;
-        $competition->max_teams = $request->filled('any_max_teams') ? $request->max_teams : 0;
+        $competition->max_teams = $request->filled('any_max_teams') ? 0 : $request->max_teams;
 
         if ($request->hasFile('logo')) {
             $competition->logo = ImageUploader::store('logo', 'competitions_logo');
@@ -53,7 +54,11 @@ class CompetitionController extends Controller
         $competition->save();
 
         $competition->races()->sync(array_values($request->races));
-        return redirect('/competitions/' . $competition->id);
+        return redirect('/competitions/' . $competition->id . '/edit')
+            ->with('success', __(
+                'competitions/create.success_message',
+                ['name' => $competition->name]
+            ));
     }
 
     /**
@@ -75,7 +80,14 @@ class CompetitionController extends Controller
      */
     public function edit(Competition $competition)
     {
-        //
+        dump(session()->all());
+        if ($competition->round) {
+            return back()->with('alert', __('competitions/list.edit_fail'));
+        }
+
+        $competitionRaces = $competition->races;
+
+        return view('competitions.edit', compact(['competition', 'competitionRaces']));
     }
 
     /**
@@ -84,10 +96,25 @@ class CompetitionController extends Controller
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Competition $competition
      * @return \Illuminate\Http\Response
+     * @throws \App\Services\CompetitionStrategy\CompetitionStrategyException
+     * @throws \ReflectionException
+     * @throws \Gumlet\ImageResizeException
      */
-    public function update(Request $request, Competition $competition)
+    public function update(CompetitionSaveRequest $request, Competition $competition)
     {
-        //
+        $competition->fill($request->all());
+        $competition->max_teams = $request->filled('any_max_teams') ? 0 : $request->max_teams;
+        $competition->setStrategy();
+        $competition->fillParameters();
+
+        if ($request->hasFile('logo')) {
+            $competition->logo = ImageUploader::store('logo', 'competitions_logo', $competition->logo);
+        }
+
+        $competition->save();
+        $competition->races()->sync(array_values($request->races));
+
+        return back();
     }
 
     /**
@@ -95,9 +122,19 @@ class CompetitionController extends Controller
      *
      * @param \App\Models\Competition $competition
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function destroy(Competition $competition)
     {
-        //
+        if ($competition->round) {
+            return back()->with('alert', __('competitions/list.delete_fail'));
+        }
+
+        $name = $competition->name;
+        $competition->delete();
+        return back()->with('success', __(
+                'competitions/list.delete_success',
+                ['name' => $name]
+            ));
     }
 }

@@ -2,11 +2,13 @@
 
 namespace App;
 
+use App\Models\Competition;
 use App\Models\Team;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class User
@@ -53,9 +55,21 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+     * User competitions list.
+     *
+     * @return HasMany
+     */
+    public function competitions()
+    {
+        return $this->hasMany(Competition::class)
+            ->select('id', 'name', 'logo', 'type', 'finished', 'round')
+            ->withCount('teams');
+    }
+
+    /**
      * Checks if current user has super admin rights
      *
-     * @return string
+     * h  * @return string
      */
     public function isSuper()
     {

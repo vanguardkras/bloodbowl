@@ -35,7 +35,6 @@ if (! function_exists('competitionTypes')) {
             $file = substr($file, 0, -4);
             $results[] = Str::snake($file);
         }
-
         return $results;
     }
 }

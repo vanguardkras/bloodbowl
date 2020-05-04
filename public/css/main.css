@@ -5,7 +5,11 @@
 .card,
 .custom-select,
 .custom-file-input,
-.custom-file-label {
+.custom-file-label,
+.alert,
+.pagination,
+.page-link,
+.paginate_button {
     border-radius: 0;
 }
 

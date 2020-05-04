@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\Team;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class CreateTeamsTable extends Migration
 {
@@ -35,6 +37,12 @@ class CreateTeamsTable extends Migration
      */
     public function down()
     {
+        $teams = Team::all('logo');
+        foreach ($teams as $team) {
+            if ($team->logo) {
+                Storage::disk('public')->delete($team->logo);
+            }
+        }
         Schema::dropIfExists('teams');
     }
 }

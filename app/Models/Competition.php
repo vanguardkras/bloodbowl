@@ -73,6 +73,16 @@ class Competition extends Model
     }
 
     /**
+     * Get current competiton allowed races.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function races()
+    {
+        return $this->belongsToMany(Race::class);
+    }
+
+    /**
      * Determine a strategy for the current competition
      *
      * @throws \ReflectionException
@@ -87,6 +97,16 @@ class Competition extends Model
     }
 
     /**
+     * Get current competition teams
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function teams()
+    {
+        return $this->hasMany(Team::class);
+    }
+
+    /**
      * Current competition user
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -94,16 +114,6 @@ class Competition extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get current competiton allowed races.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function races()
-    {
-        return $this->belongsToMany(Race::class);
     }
 
     /**

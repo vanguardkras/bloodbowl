@@ -55,5 +55,6 @@ return [
     ],
 
     'button' => 'Create competition',
-
+    'success_message' => 'Competition ":name" has been successfully created',
+    'edit_competition' => 'Save changes',
 ];

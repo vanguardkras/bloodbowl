@@ -16,7 +16,7 @@
                              src="{{ $team->logo ? '/storage/'.$team->logo : '/img/defaults/team.jpg'}}"
                              alt="Logo">
                         <img class="hover_action" src="/img/icons/upload.png" alt="upload">
-                        <div class="hover_action_text">{{ __('teams.upload_new_logo') }}</div>
+                        <div class="hover_action_text">{{ __('general.upload_new_logo') }}</div>
                     </label>
                     <div class="card-header">
                         <h5><a href="/teams/{{ $team->id }}">{{ $team->name }}</a></h5>
@@ -31,7 +31,7 @@
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger w-100"
                                 onclick="return confirm('{{ __('teams.are_you_sure') }}')">
-                                    {{ __('teams.delete') }}
+                                    {{ __('general.delete') }}
                                 </button>
                             </form>
                         </li>

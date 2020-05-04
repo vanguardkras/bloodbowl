@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\Competition;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class CreateCompetitionsTable extends Migration
 {
@@ -27,6 +29,7 @@ class CreateCompetitionsTable extends Migration
             $table->unsignedSmallInteger('round')->default(0);
             $table->date('registration_end');
             $table->unsignedSmallInteger('max_teams')->default(0);
+            $table->date('finished')->nullable();
             $table->timestamps();
         });
     }
@@ -38,6 +41,12 @@ class CreateCompetitionsTable extends Migration
      */
     public function down()
     {
+        $teams = Competition::all('logo');
+        foreach ($teams as $team) {
+            if ($team->logo) {
+                Storage::disk('public')->delete($team->logo);
+            }
+        }
         Schema::dropIfExists('competitions');
     }
 }

@@ -14,8 +14,8 @@ class CreateCompetitionRaceTable extends Migration
     public function up()
     {
         Schema::create('competition_race', function (Blueprint $table) {
-            $table->unsignedBigInteger('competition_id');
-            $table->unsignedBigInteger('race_id');
+            $table->foreignId('competition_id')->constrained()->onDelete('cascade');
+            $table->foreignId('race_id')->constrained()->onDelete('cascade');
         });
     }
 

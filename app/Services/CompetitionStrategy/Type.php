@@ -21,6 +21,13 @@ abstract class Type
      */
     protected $validationRules = [];
 
+    /**
+     * Round after which the registration is forbidden.
+     *
+     * @var int
+     */
+    protected $registrationMaxRound = 0;
+
     public function __construct(Competition $competition)
     {
         request()->validate($this->validationRules);

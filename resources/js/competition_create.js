@@ -5,7 +5,7 @@ showHideCheckbox('#open_league_wo_po', '#open_league_play_off');
 showHideCheckbox('#group_rounds_wo_po', '#group_rounds_play_off');
 
 showCompetitionTypeSettings();
-$('#type').change(function() {
+$('#type').change(function () {
     showCompetitionTypeSettings();
 });
 
@@ -22,6 +22,8 @@ function showHideCheckbox(checkboxId, elementId) {
 
 function showCompetitionTypeSettings() {
     let type = $('#type').val();
-    $('.competition_type_settings').addClass('d-none');
-    $('#' + type).removeClass('d-none');
+    if (type) {
+        $('.competition_type_settings').addClass('d-none');
+        $('#' + type).removeClass('d-none');
+    }
 }

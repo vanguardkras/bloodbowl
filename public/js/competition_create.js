@@ -117,8 +117,11 @@ function showHideCheckbox(checkboxId, elementId) {
 
 function showCompetitionTypeSettings() {
   var type = $('#type').val();
-  $('.competition_type_settings').addClass('d-none');
-  $('#' + type).removeClass('d-none');
+
+  if (type) {
+    $('.competition_type_settings').addClass('d-none');
+    $('#' + type).removeClass('d-none');
+  }
 }
 
 /***/ }),

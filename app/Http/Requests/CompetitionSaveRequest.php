@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
-class CompetitionCreateRequest extends FormRequest
+class CompetitionSaveRequest extends FormRequest
 {
     /**
      * Get custom attributes for validator errors.
@@ -43,7 +43,7 @@ class CompetitionCreateRequest extends FormRequest
         $types = $this->getCompetitionTypes();
 
         return [
-            'name' => 'required|max:255|unique:competitions,name',
+            'name' => 'required_unless:request,edit|max:255|unique:competitions,name',
             'info' => 'max:1000',
             'registration_end' => 'required|date|after:today',
             'self_confirm' => 'required|integer|min:0|max:3',
@@ -53,7 +53,7 @@ class CompetitionCreateRequest extends FormRequest
             'tops_number' => 'required|min:1|max:10',
             'races' => 'required|array',
             'races.*' => 'exists:races,id|distinct',
-            'type' => 'required|in:' . $types,
+            'type' => 'required_unless:request,edit|in:' . $types,
         ];
     }
 

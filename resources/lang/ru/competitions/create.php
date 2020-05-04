@@ -55,5 +55,6 @@ return [
     ],
 
     'button' => 'Создать соревнование',
-
+    'success_message' => 'Соревнование ":name" было успешно создано',
+    'edit_competition' => 'Save changes',
 ];
