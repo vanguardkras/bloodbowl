@@ -9,16 +9,21 @@ class Commissioner
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
-        if (!auth()->user()->commissioner) {
-            abort('404');
+        $fail = false;
+        if (auth()->user()) {
+            if (!auth()->user()->commissioner) {
+                $fail = true;
+            }
+        } else {
+            $fail = true;
         }
 
-        return $next($request);
+        return $fail ? abort('404') : $next($request);
     }
 }

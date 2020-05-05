@@ -8,7 +8,6 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class User
@@ -69,7 +68,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Checks if current user has super admin rights
      *
-     * h  * @return string
+     * @return string
      */
     public function isSuper()
     {

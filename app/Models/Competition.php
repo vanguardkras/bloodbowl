@@ -73,6 +73,17 @@ class Competition extends Model
     }
 
     /**
+     * Get current competition logo
+     *
+     * @return string
+     */
+    public function logo()
+    {
+        $default_img = '/img/defaults/competition.jpg';
+        return $this->logo ? '/storage/' . $this->logo : $default_img;
+    }
+
+    /**
      * Get current competiton allowed races.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -114,6 +125,13 @@ class Competition extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public static function getOpenRegistration()
+    {
+        return self::select(['id', 'name', 'logo', 'type', 'registration_end'])
+            ->where('round', 0)
+            ->orderBy('registration_end')->get();
     }
 
     /**

@@ -11,7 +11,7 @@ class CompetitionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
@@ -22,7 +22,7 @@ class CompetitionController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create()
     {
@@ -34,7 +34,7 @@ class CompetitionController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @throws \Gumlet\ImageResizeException
      * @throws \ReflectionException
      * @throws \App\Services\CompetitionStrategy\CompetitionStrategyException
@@ -69,18 +69,17 @@ class CompetitionController extends Controller
      */
     public function show(Competition $competition)
     {
-        dd($competition->parameters);
+
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param \App\Models\Competition $competition
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(Competition $competition)
     {
-        dump(session()->all());
         if ($competition->round) {
             return back()->with('alert', __('competitions/list.edit_fail'));
         }
@@ -95,7 +94,7 @@ class CompetitionController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Competition $competition
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      * @throws \App\Services\CompetitionStrategy\CompetitionStrategyException
      * @throws \ReflectionException
      * @throws \Gumlet\ImageResizeException
@@ -121,7 +120,7 @@ class CompetitionController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Models\Competition $competition
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
     public function destroy(Competition $competition)
