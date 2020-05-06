@@ -3,8 +3,8 @@
 @section('content')
     <h1 class="mb-3">Blood Bowl в Красноярске</h1>
     <div class="row">
-        <div class="col-lg-6 col-md-12">
-            <h3 class="info">Открыта регистрация на соревнования:</h3>
+        <div class="col-lg-6 col-md-12 shadow">
+            <h3 class="text-info">Открыта регистрация на соревнования:</h3>
             <table class="table table-sm">
                 <thead>
                 <tr>

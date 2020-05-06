@@ -51,20 +51,18 @@ class PagesTest extends TestCase
         $user = $this->loginAsFakeUser();
         $user->commissioner = true;
         $user->save();
-        $type = competitionTypes()[2];
-        $competition = new Competition([
-            'name' => 'TestCompetitionName',
-            'user_id' => $user->id,
-            'type' => $type,
-            'tops_number' => 1,
-            'self_confirm' => 1,
-            'winner_points' => 3,
-            'registration_end' => today()->toDateString(),
-        ]);
-        $competition->user_id = $user->id;
-        $competition->save();
+        $competition = $this->createFakeCompetition($user->id);
+
         $this->get('/competitions')->assertOk();
         $this->get('/competitions/create')->assertOk();
-        $this->get('/competitions/' . $competition->id)->assertOk();
+        //$this->get('/competitions/' . $competition->id)->assertOk();
+    }
+
+    public function testPublicCompetitionPageTest()
+    {
+        $competition = $this->createFakeCompetition(1);
+        $this->get('/competitions/'.$competition->id.'/show')->assertOk();
+        $user = $this->loginAsFakeUser();
+        $this->get('/competitions/'.$competition->id.'/show')->assertOk();
     }
 }

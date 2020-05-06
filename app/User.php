@@ -5,6 +5,7 @@ namespace App;
 use App\Models\Competition;
 use App\Models\Team;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -83,5 +84,33 @@ class User extends Authenticatable implements MustVerifyEmail
     public function teams()
     {
         return $this->hasMany(Team::class);
+    }
+
+    /**
+     * Check if the user has teams applied to a competition
+     *
+     * @param $competition_id
+     * @return bool
+     */
+    public function registeredTeam($competition_id)
+    {
+        return Team::where('user_id', $this->id)
+            ->join('registration_competition_team', 'registration_competition_team.team_id', '=', 'teams.id')
+            ->where('registration_competition_team.competition_id', $competition_id)
+            ->first();
+    }
+
+    /**
+     * Get teams filtered by a race
+     *
+     * @param Collection $races
+     * @return Collection
+     */
+    public function getAvailableTeamsByRaces(Collection $races)
+    {
+        return $this->teams()
+            ->whereIn('race_id', $races->modelKeys())
+            ->where('competition_id', null)
+            ->get();
     }
 }

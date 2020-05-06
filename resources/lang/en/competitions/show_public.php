@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'header' => 'Competition',
+    'commissioner' => 'Commissioner',
+    'type' => 'Type',
+    'participants' => 'Participants',
+    'reg_requests' => 'Registration requests',
+    'current_round' => 'Current Round',
+    'reg_end' => 'Registration end',
+    'info' => 'Information',
+    'details' => 'Details',
+    'prize_places' => 'Prize places',
+    'winner_points' => 'Winner points',
+    'finished' => 'Finished',
+    'reg_over' => 'Registration is over',
+    'guest_info' => 'To apply for the competition, register on this site and create a team.',
+    'register' => 'Register',
+    'no_teams' => 'You don\'t have any teams.',
+    'create_team' => 'Create team',
+    'already_applied' => 'You have already applied to this competition with the team',
+    'can_change' => 'But you can change it until your choice is not approved by the commissioner',
+    'select_team' => 'Select a team to apply for the competition',
+    'apply' => 'Apply',
+];

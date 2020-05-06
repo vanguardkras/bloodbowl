@@ -9,7 +9,9 @@
 .alert,
 .pagination,
 .page-link,
-.paginate_button {
+.paginate_button,
+.list-group-item:last-child,
+.list-group-item:first-child {
     border-radius: 0;
 }
 

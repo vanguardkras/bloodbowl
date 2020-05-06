@@ -108,6 +108,16 @@ class Competition extends Model
     }
 
     /**
+     * Get a collection of teams applied to current competition.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function registeredTeams()
+    {
+        return $this->belongsToMany(Team::class, 'registration_competition_team');
+    }
+
+    /**
      * Get current competition teams
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -127,6 +137,11 @@ class Competition extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Get a list of competitions with the active registration stage.
+     *
+     * @return mixed
+     */
     public static function getOpenRegistration()
     {
         return self::select(['id', 'name', 'logo', 'type', 'registration_end'])

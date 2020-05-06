@@ -21,6 +21,27 @@ class Team extends Model
     }
 
     /**
+     * Get a competition current team is applied to
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function registeredCompetition()
+    {
+        return $this->belongsToMany(Competition::class, 'registration_competition_team');
+    }
+
+    /**
+     * Get current team logo.
+     *
+     * @return string
+     */
+    public function logo()
+    {
+        $default_img = '/img/defaults/team.jpg';
+        return $this->logo ? '/storage/' . $this->logo : $default_img;
+    }
+
+    /**
      * Get current team user.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

@@ -34,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
         if (env('DB_DEBUG')) {
             DB::listen(function ($query) {
                 dump($query->sql);
+                //dump($query->time);
             });
         }
     }

@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Competition;
+use App\Models\Team;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -18,7 +19,7 @@ class CompetitionPolicy
      */
     public function viewAny(User $user)
     {
-        return true;
+        return $user->commissioner;
     }
 
     /**
@@ -90,5 +91,12 @@ class CompetitionPolicy
     public function forceDelete(User $user, Competition $competition)
     {
         return false;
+    }
+
+    public function registerTeam(User $user, Competition $competition)
+    {
+        return !$competition->finished
+            && today()->toDateString() <= $competition->registration_end;
+
     }
 }

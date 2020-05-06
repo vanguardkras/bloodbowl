@@ -8,6 +8,11 @@ use App\Services\ImageUploader;
 
 class CompetitionController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Competition::class, 'competition');
+    }
+
     /**
      * Display a listing of the resource.
      *
