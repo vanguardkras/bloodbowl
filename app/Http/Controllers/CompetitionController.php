@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CompetitionSaveRequest;
 use App\Models\Competition;
+use App\Models\Team;
 use App\Services\ImageUploader;
+use Illuminate\Http\Request;
 
 class CompetitionController extends Controller
 {
@@ -70,11 +72,13 @@ class CompetitionController extends Controller
      * Display the specified resource.
      *
      * @param \App\Models\Competition $competition
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Competition $competition)
     {
+        $competition->load('registeredTeams.user', 'teams.user');
 
+        return view('competitions.show', compact('competition'));
     }
 
     /**
@@ -137,8 +141,31 @@ class CompetitionController extends Controller
         $name = $competition->name;
         $competition->delete();
         return back()->with('success', __(
-                'competitions/list.delete_success',
-                ['name' => $name]
-            ));
+            'competitions/list.delete_success',
+            ['name' => $name]
+        ));
+    }
+
+    /**
+     * Approve/reject a team registration.
+     *
+     * @param Request $request
+     * @param Competition $competition
+     * @param Team $team
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function registerTeam(Request $request, Competition $competition, Team $team)
+    {
+        $this->authorize('registerTeamCommissioner', $competition);
+
+        if ($request->action === 'approve') {
+            $team->competition_id = $competition->id;
+            $team->save();
+        }
+
+        $competition->registeredTeams()->detach($team);
+
+        return back();
     }
 }

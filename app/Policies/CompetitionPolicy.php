@@ -93,10 +93,29 @@ class CompetitionPolicy
         return false;
     }
 
+    /**
+     * Register team public request
+     *
+     * @param User $user
+     * @param Competition $competition
+     * @return bool
+     */
     public function registerTeam(User $user, Competition $competition)
     {
         return !$competition->finished
             && today()->toDateString() <= $competition->registration_end;
 
+    }
+
+    /**
+     * Register team for a competition by a commissioner.
+     *
+     * @param User $user
+     * @param Competition $competition
+     * @return bool
+     */
+    public function registerTeamCommissioner(User $user, Competition $competition)
+    {
+        return $user->id === $competition->user_id;
     }
 }

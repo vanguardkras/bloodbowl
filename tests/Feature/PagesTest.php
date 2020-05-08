@@ -55,7 +55,7 @@ class PagesTest extends TestCase
 
         $this->get('/competitions')->assertOk();
         $this->get('/competitions/create')->assertOk();
-        //$this->get('/competitions/' . $competition->id)->assertOk();
+        $this->get('/competitions/' . $competition->id)->assertOk();
     }
 
     public function testPublicCompetitionPageTest()

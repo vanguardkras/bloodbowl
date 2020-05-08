@@ -39,6 +39,14 @@ class PageController extends Controller
         return view('main', compact('open_registrations'));
     }
 
+    /**
+     * Apply for a competition.
+     *
+     * @param CompetitionTeamRegisterRequest $request
+     * @param Competition $competition
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function registerTeam(CompetitionTeamRegisterRequest $request, Competition $competition)
     {
         $this->authorize('registerTeam', $competition);
