@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', 'PageController@main');
 Route::get('competitions/{competition}/show', 'PageController@competition');
 Route::post('competitions/{competition}/register_team', 'PageController@registerTeam');
+Route::get('user/{user}', 'PageController@user');
 
 //Auth routes
 Auth::routes(['verify' => true]);

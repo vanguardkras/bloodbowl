@@ -9,7 +9,7 @@
             <p class="pt-2">
                 <b>{{ __('competitions/show_public.commissioner') }}:</b>
                 <a href="/user/{{ $competition->user->id }}">
-                    {{ $competition->user->username ?: __('auth.nameless_user') }}
+                    {{ $competition->user->name ?: __('auth.nameless_user') }}
                 </a>
             </p>
             <p>
