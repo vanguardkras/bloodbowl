@@ -31,7 +31,7 @@ class CompetitionPolicy
      */
     public function view(User $user, Competition $competition)
     {
-        return $user->id === $competition->user_id;
+        return $user->id == $competition->user_id;
     }
 
     /**

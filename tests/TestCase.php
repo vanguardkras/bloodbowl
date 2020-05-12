@@ -30,7 +30,6 @@ abstract class TestCase extends BaseTestCase
     {
         $competition = new Competition([
             'name' => 'TestCompetitionName',
-            'user_id' => $user_id,
             'type' => competitionTypes()[2],
             'tops_number' => 1,
             'self_confirm' => 1,

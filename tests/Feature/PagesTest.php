@@ -52,7 +52,6 @@ class PagesTest extends TestCase
         $user->commissioner = true;
         $user->save();
         $competition = $this->createFakeCompetition($user->id);
-
         $this->get('/competitions')->assertOk();
         $this->get('/competitions/create')->assertOk();
         $this->get('/competitions/' . $competition->id)->assertOk();
@@ -64,5 +63,11 @@ class PagesTest extends TestCase
         $this->get('/competitions/'.$competition->id.'/show')->assertOk();
         $user = $this->loginAsFakeUser();
         $this->get('/competitions/'.$competition->id.'/show')->assertOk();
+    }
+
+    public function testCoachPageTest()
+    {
+        $user = $this->loginAsFakeUser();
+        $this->get('/user/' . $user->id)->assertOk();
     }
 }
