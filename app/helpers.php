@@ -28,7 +28,7 @@ if (! function_exists('competitionTypes')) {
         $files = array_slice($files, 2);
         $results = [];
         foreach ($files as $file) {
-            if ($file === 'Type.php' || $file === 'CompetitionStrategyException.php') {
+            if ($file === 'Type.php') {
                 continue;
             }
 

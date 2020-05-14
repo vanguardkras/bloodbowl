@@ -17,11 +17,11 @@ class CreateScoresTable extends Migration
             $table->id();
             $table->foreignId('competition_id')->constrained()->onDelete('cascade');
             $table->foreignId('team_id')->constrained();
-            $table->unsignedSmallInteger('score');
-            $table->unsignedSmallInteger('touchdowns');
-            $table->unsignedSmallInteger('touchdowns_diff');
-            $table->unsignedSmallInteger('round');
-            $table->unsignedSmallInteger('order');
+            $table->unsignedSmallInteger('score')->default(0);
+            $table->unsignedSmallInteger('touchdowns')->default(0);
+            $table->unsignedSmallInteger('touchdowns_diff')->default(0);
+            $table->unsignedSmallInteger('round')->default(0);
+            $table->unsignedSmallInteger('order')->default(0);
             $table->timestamps();
         });
     }

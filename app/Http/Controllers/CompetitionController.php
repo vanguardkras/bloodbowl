@@ -44,12 +44,10 @@ class CompetitionController extends Controller
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @throws \Gumlet\ImageResizeException
      * @throws \ReflectionException
-     * @throws \App\Services\CompetitionStrategy\CompetitionStrategyException
      */
     public function store(CompetitionSaveRequest $request)
     {
         $competition = new Competition($request->all());
-        $competition->setStrategy();
         $competition->fillParameters();
         $competition->user_id = auth()->user()->id;
         $competition->max_teams = $request->filled('any_max_teams') ? 0 : $request->max_teams;
@@ -77,7 +75,8 @@ class CompetitionController extends Controller
     public function show(Competition $competition)
     {
         $competition->load('registeredTeams.user', 'teams.user');
-
+        $competition->setStrategy();
+        dd($competition->strategy->makePlayOffOrder());
         return view('competitions.show', compact('competition'));
     }
 
@@ -104,7 +103,6 @@ class CompetitionController extends Controller
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\Competition $competition
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \App\Services\CompetitionStrategy\CompetitionStrategyException
      * @throws \ReflectionException
      * @throws \Gumlet\ImageResizeException
      */
@@ -112,7 +110,6 @@ class CompetitionController extends Controller
     {
         $competition->fill($request->all());
         $competition->max_teams = $request->filled('any_max_teams') ? 0 : $request->max_teams;
-        $competition->setStrategy();
         $competition->fillParameters();
 
         if ($request->hasFile('logo')) {
@@ -122,7 +119,7 @@ class CompetitionController extends Controller
         $competition->save();
         $competition->races()->sync(array_values($request->races));
 
-        return back();
+        return back()->with('success', __('competitions/create.success_edit_message'));
     }
 
     /**
@@ -140,10 +137,24 @@ class CompetitionController extends Controller
 
         $name = $competition->name;
         $competition->delete();
-        return back()->with('success', __(
+        return redirect('/competitions')->with('success', __(
             'competitions/list.delete_success',
             ['name' => $name]
         ));
+    }
+
+
+    /**
+     * Start the next round of the competition.
+     *
+     * @param Competition $competition
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \ReflectionException
+     */
+    public function nextRound(Competition $competition)
+    {
+        $competition->nextRound();
+        return back();
     }
 
     /**

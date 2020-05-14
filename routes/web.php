@@ -43,5 +43,6 @@ Route::resource('teams', 'TeamController')->except('edit');
 Route::middleware('commissioner')->group(function () {
     Route::resource('competitions', 'CompetitionController');
     Route::post('register/{competition}/{team}', 'CompetitionController@registerTeam');
+    Route::post('competitions/{competition}/next_round', 'CompetitionController@nextRound');
 });
 

@@ -36,6 +36,7 @@ class Competition extends Model
      * @var array
      */
     protected $casts = [
+        'user_id' => 'int',
         'parameters' => 'object',
     ];
 
@@ -59,12 +60,22 @@ class Competition extends Model
      *
      * @var Type
      */
-    protected $strategy;
+    public $strategy;
+
+    /**
+     * Get the number of played matches for the current round
+     *
+     * @return int
+     */
+    public function getCurrentRoundPlayedMatches()
+    {
+        return $this->matchLogs()->where('round', $this->round)->count();
+    }
 
     /**
      * Fill input parameters basing on the strategy.
      *
-     * @throws CompetitionStrategyException
+     * @throws \ReflectionException
      */
     public function fillParameters()
     {
@@ -84,6 +95,27 @@ class Competition extends Model
     }
 
     /**
+     * Get current competition match logs.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function matchLogs()
+    {
+        return $this->hasMany(MatchLog::class);
+    }
+
+    /**
+     * Start the next round
+     *
+     * @throws \ReflectionException
+     */
+    public function nextRound()
+    {
+        $this->checkStrategy();
+        $this->strategy->nextRound();
+    }
+
+    /**
      * Get current competiton allowed races.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -94,20 +126,6 @@ class Competition extends Model
     }
 
     /**
-     * Determine a strategy for the current competition
-     *
-     * @throws \ReflectionException
-     */
-    public function setStrategy()
-    {
-        $strategyName = ucfirst(Str::camel($this->type));
-        $reflection = new \ReflectionClass(Type::class);
-        $strategyNamespace = $reflection->getNamespaceName();
-        $reflection = new \ReflectionClass($strategyNamespace . '\\' . $strategyName);
-        $this->strategy = $reflection->newInstance($this);
-    }
-
-    /**
      * Get a collection of teams applied to current competition.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -115,6 +133,16 @@ class Competition extends Model
     public function registeredTeams()
     {
         return $this->belongsToMany(Team::class, 'registration_competition_team');
+    }
+
+    /**
+     * Get current competition score data.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
     }
 
     /**
@@ -150,12 +178,28 @@ class Competition extends Model
     }
 
     /**
-     * @throws CompetitionStrategyException
+     * Check if the competition has a strategy.
+     *
+     * @throws \ReflectionException
      */
     protected function checkStrategy()
     {
         if (!$this->strategy) {
-            throw new CompetitionStrategyException();
+            $this->setStrategy();
         }
+    }
+
+    /**
+     * Determine a strategy for the current competition
+     *
+     * @throws \ReflectionException
+     */
+    public function setStrategy()
+    {
+        $strategyName = ucfirst(Str::camel($this->type));
+        $reflection = new \ReflectionClass(Type::class);
+        $strategyNamespace = $reflection->getNamespaceName();
+        $reflection = new \ReflectionClass($strategyNamespace . '\\' . $strategyName);
+        $this->strategy = $reflection->newInstance($this, request()->all());
     }
 }

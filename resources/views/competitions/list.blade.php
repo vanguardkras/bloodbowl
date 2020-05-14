@@ -12,7 +12,7 @@
                     <div class="card team_card">
                         <a href="/competitions/{{ $competition->id }}">
                             <img class="action_image card-img-top"
-                                 src="{{ $competition->logo ? '/storage/'.$competition->logo : '/img/defaults/competition.jpg'}}"
+                                 src="{{ $competition->logo() }}"
                                  alt="Logo">
                         </a>
                         <div class="card-header">

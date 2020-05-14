@@ -35,6 +35,7 @@ class CreateUsersTable extends Migration
         $super->email_verified_at = time();
         $super->password = Hash::make(env('SUPER_PASSWORD'));
         $super->is_super = true;
+        $super->commissioner = true;
         $super->save();
     }
 

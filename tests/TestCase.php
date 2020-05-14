@@ -24,13 +24,14 @@ abstract class TestCase extends BaseTestCase
      * Create a test competition.
      *
      * @param int $user_id
+     * @param int $type_id
      * @return Competition
      */
-    protected function createFakeCompetition(int $user_id)
+    protected function createFakeCompetition(int $user_id, int $type_id = 2)
     {
         $competition = new Competition([
             'name' => 'TestCompetitionName',
-            'type' => competitionTypes()[2],
+            'type' => competitionTypes()[$type_id],
             'tops_number' => 1,
             'self_confirm' => 1,
             'winner_points' => 3,

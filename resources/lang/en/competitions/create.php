@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'header' => 'Your competitions',
+    'header' => 'Create a new competition',
     'name' => 'Competition name',
     'name_placeholder' => 'Enter your competition unique name',
     'info' => 'Competition information',
@@ -56,5 +56,6 @@ return [
 
     'button' => 'Create competition',
     'success_message' => 'Competition ":name" has been successfully created',
+    'success_edit_message' => 'Competition ":name" data has been successfully updated',
     'edit_competition' => 'Save changes',
 ];

@@ -14,7 +14,7 @@
                 </h5>
                 <div>
                     <img
-                        src="{{ $competition->logo ? '/storage/'.$competition->logo : '/img/defaults/competition.jpg'}}"
+                        src="{{ $competition->logo() }}"
                         alt="logo" style="width: 200px">
                 </div>
                 {{-- Competition logo --}}
