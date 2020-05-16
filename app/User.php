@@ -55,6 +55,19 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+     * Get a team approved to a competition.
+     *
+     * @param $competition_id
+     * @return \Illuminate\Database\Eloquent\Model|HasMany|object|null
+     */
+    public function approvedTeam($competition_id)
+    {
+        return $this->teams()
+            ->where('competition_id', $competition_id)
+            ->first();
+    }
+
+    /**
      * User competitions list.
      *
      * @return HasMany

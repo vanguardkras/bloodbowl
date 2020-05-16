@@ -15,7 +15,7 @@ class CreateScoresTable extends Migration
     {
         Schema::create('scores', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('competition_id')->constrained()->onDelete('cascade');
+            $table->foreignId('competition_id')->constrained()->cascadeOnDelete();
             $table->foreignId('team_id')->constrained();
             $table->unsignedSmallInteger('score')->default(0);
             $table->unsignedSmallInteger('touchdowns')->default(0);

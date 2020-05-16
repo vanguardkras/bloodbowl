@@ -7,6 +7,7 @@ use App\Models\Competition;
 use App\Models\Team;
 use App\Services\ImageUploader;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CompetitionController extends Controller
 {
@@ -71,12 +72,14 @@ class CompetitionController extends Controller
      *
      * @param \App\Models\Competition $competition
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \ReflectionException
      */
     public function show(Competition $competition)
     {
+        $competition->checkStrategy();
+        $competition->strategy->createTrophies();
         $competition->load('registeredTeams.user', 'teams.user');
         $competition->setStrategy();
-        dd($competition->strategy->makePlayOffOrder());
         return view('competitions.show', compact('competition'));
     }
 

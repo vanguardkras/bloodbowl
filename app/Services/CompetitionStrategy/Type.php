@@ -4,7 +4,9 @@
 namespace App\Services\CompetitionStrategy;
 
 use App\Models\Competition;
+use App\Models\MatchLog;
 use App\Models\Score;
+use App\Models\Trophy;
 use Illuminate\Support\Facades\Validator;
 
 abstract class Type
@@ -45,6 +47,25 @@ abstract class Type
      * Start the next competition round.
      */
     public abstract function nextRound();
+
+
+    /**
+     * Competition finishing procedures.
+     */
+    protected function finish()
+    {
+        if ($this->round != $this->maxRound()) {
+            return;
+        }
+
+        $this->competition->finished = today()->toDateString();
+        $this->competition->save();
+
+        $this->createTrophies();
+
+        //MatchLog::where('competition_id', $this->competition->id)->delete();
+        // Possibly, scores should be removed as well.
+    }
 
     /**
      * Creates a classic play of order for the CURRENT round
@@ -92,6 +113,44 @@ abstract class Type
                 $score->save();
             }
         }
+    }
+
+    /**
+     * Create trophies from a scores collection.
+     *
+     * @param $team_id
+     * @param $position
+     */
+    protected function createTrophy($team_id, $position)
+    {
+        $trophy = new Trophy;
+        $trophy->competition_id = $this->competition->id;
+        $trophy->team_id = $team_id;
+        $trophy->position = $position;
+    }
+
+    /**
+     * Create trophies for a finished competition.
+     * @param bool $tops_number
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    protected function createPlayOffTrophies($tops_number = false)
+    {
+        $scores = $this->competition->scores()
+            ->orderBy('round', 'DESC')
+            ->orderBy('score', 'DESC')
+            ->orderBy('touchdowns_diff', 'DESC')
+            ->orderBy('touchdowns', 'DESC')
+            ->limit($tops_number ?: $this->competition->tops_number)
+            ->get();
+
+        $position = 1;
+        foreach ($scores as $score) {
+            $this->createTrophy($score->team_id, $position);
+            $position++;
+        }
+
+        return $scores;
     }
 
     /**

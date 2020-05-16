@@ -19,7 +19,8 @@ class PlayOff extends Type
      */
     public function nextRound()
     {
-        // TODO: Implement nextRound() method.
+        // Find max round
+        // If not max create automatically using makePlayOffOrder()
     }
 
     /**

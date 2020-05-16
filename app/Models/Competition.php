@@ -182,7 +182,7 @@ class Competition extends Model
      *
      * @throws \ReflectionException
      */
-    protected function checkStrategy()
+    public function checkStrategy()
     {
         if (!$this->strategy) {
             $this->setStrategy();

@@ -13,7 +13,8 @@
                 </a>
             </p>
             <p>
-                <b>{{ __('competitions/show_public.type') }}:</b> {{ __('competitions/create.types.' . $competition->type) }}
+                <b>{{ __('competitions/show_public.type') }}
+                    :</b> {{ __('competitions/create.types.' . $competition->type) }}
             </p>
             <p>
                 <b>{{ __('competitions/show_public.participants') }}:</b> {{ $competition->teams()->count() }}
@@ -59,33 +60,40 @@
                 <a href="/register" class="btn btn-primary">{{ __('competitions/show_public.register') }}</a>
             @elseif (auth()->user()->getAvailableTeamsByRaces($competition->races)->isEmpty())
                 <p class="small mb-0">{{ __('competitions/show_public.no_teams') }}</p>
-                <p><a href="/teams/create" class="btn btn-primary btn-sm">{{ __('competitions/show_public.create_team') }}</a></p>
+                <p><a href="/teams/create"
+                      class="btn btn-primary btn-sm">{{ __('competitions/show_public.create_team') }}</a></p>
             @else
                 <form action="/competitions/{{ $competition->id }}/register_team" method="post">
                     @csrf
                     <label for="team_id">
-                        @if (auth()->user()->registered_team)
+                        @if (auth()->user()->registered_team || auth()->user()->approved_team)
                             {{ __('competitions/show_public.already_applied') }}:
-                            <a href="/teams/{{ auth()->user()->registered_team->id }}">{{ auth()->user()->registered_team->name }}</a>
-                            <br>
-                            {{ __('competitions/show_public.can_change') }}.
+                            <a href="/teams/{{ auth()->user()->approved_team->id ?? auth()->user()->registered_team->id }}">
+                                {{ auth()->user()->approved_team->name ?? auth()->user()->registered_team->name }}
+                            </a>
+                            @if (!auth()->user()->approved_team)
+                                <br>
+                                {{ __('competitions/show_public.can_change') }}.
+                            @endif
                         @else
                             {{ __('competitions/show_public.select_team') }}
                         @endif
                     </label>
-                    <select name="team_id" id="team_id" class="custom-select col-9">
-                        @foreach (auth()->user()->getAvailableTeamsByRaces($competition->races) as $team)
-                            @if ($competition->races->contains($team->race->id))
-                                <option value="{{ $team->id }}">{{ $team->name }} ({{ $team->race->name }})</option>
-                            @endif
-                        @endforeach
-                    </select>
-                    <div class="mt-2">
-                        <button type="submit" class="btn
+                    @if (!auth()->user()->approved_team)
+                        <select name="team_id" id="team_id" class="custom-select col-9">
+                            @foreach (auth()->user()->getAvailableTeamsByRaces($competition->races) as $team)
+                                @if ($competition->races->contains($team->race->id))
+                                    <option value="{{ $team->id }}">{{ $team->name }} ({{ $team->race->name }})</option>
+                                @endif
+                            @endforeach
+                        </select>
+                        <div class="mt-2">
+                            <button type="submit" class="btn
                                 @if (auth()->user()->registered_team) btn-secondary @else btn-primary @endif">
-                            {{ __('competitions/show_public.apply') }}
-                        </button>
-                    </div>
+                                {{ __('competitions/show_public.apply') }}
+                            </button>
+                        </div>
+                    @endif
                 </form>
             @endif
         </div>

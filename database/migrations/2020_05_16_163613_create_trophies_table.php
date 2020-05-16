@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCompetitionRaceTable extends Migration
+class CreateTrophiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class CreateCompetitionRaceTable extends Migration
      */
     public function up()
     {
-        Schema::create('competition_race', function (Blueprint $table) {
+        Schema::create('trophies', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('competition_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('race_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('team_id')->constrained()->cascadeOnDelete();
+            $table->unsignedTinyInteger('position');
+            $table->timestamps();
         });
     }
 
@@ -26,6 +29,6 @@ class CreateCompetitionRaceTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('competition_race');
+        Schema::dropIfExists('trophies');
     }
 }

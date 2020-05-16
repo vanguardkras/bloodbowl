@@ -23,6 +23,7 @@ class PageController extends Controller
 
         if (auth()->check()) {
             auth()->user()->registered_team = auth()->user()->registeredTeam($competition->id);
+            auth()->user()->approved_team = auth()->user()->approvedTeam($competition->id);
         }
         return view('competition', compact('competition'));
     }
@@ -54,6 +55,12 @@ class PageController extends Controller
         return back();
     }
 
+    /**
+     * A coach page.
+     *
+     * @param User $user
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function user(User $user)
     {
         $user->load('teams')->with('races');

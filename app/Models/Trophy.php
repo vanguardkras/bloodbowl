@@ -5,18 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Score
+ * Class Trophy
  * @package App\Models
  *
  * @property int competition_id
  * @property int team_id
- * @property int score
- * @property int touchdowns
- * @property int touchdowns_diff
- * @property int round
- * @property int order
+ * @property int position
  */
-class Score extends Model
+class Trophy extends Model
 {
     //
 }

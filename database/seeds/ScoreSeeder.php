@@ -14,8 +14,10 @@ class ScoreSeeder extends Seeder
     public function run()
     {
         $teams = Team::all();
+        $order = 0;
         foreach ($teams as $team) {
-            factory(Score::class)->create(['team_id' => $team->id]);
+            factory(Score::class)->create(['team_id' => $team->id, 'order' => $order]);
+            $order++;
         }
     }
 }

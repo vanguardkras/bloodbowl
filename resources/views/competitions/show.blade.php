@@ -23,7 +23,7 @@
                             <td><a href="/teams/{{ $team->id }}">{{ $team->name }}</a></td>
                             <td>{{ $team->race->name }}</td>
                             <td>
-                                <a href="/users/{{ $team->user->id }}">{{ $team->user->username ?: __('auth.nameless_user') }}</a>
+                                <a href="/user/{{ $team->user->id }}">{{ $team->user->username ?: __('auth.nameless_user') }}</a>
                             </td>
                             <td>
                                 <form action="/register/{{ $competition->id }}/{{$team->id}}" method="post">
@@ -62,7 +62,7 @@
                         <td><a href="/teams/{{ $team->id }}">{{ $team->name }}</a></td>
                         <td>{{ $team->race->name }}</td>
                         <td>
-                            <a href="/users/{{ $team->user->id }}">{{ $team->user->username ?: __('auth.nameless_user') }}</a>
+                            <a href="/user/{{ $team->user->id }}">{{ $team->user->username ?: __('auth.nameless_user') }}</a>
                         </td>
                         @if ($competition->round)
                             <th>CALCULATE THEM</th>

@@ -12,6 +12,6 @@ class TeamSeeder extends Seeder
      */
     public function run()
     {
-        factory(Team::class, 10)->create();
+        factory(Team::class, 12)->create(['competition_id' => 1]);
     }
 }

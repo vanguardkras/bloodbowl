@@ -50,7 +50,10 @@ class OpenLeague extends Type
      */
     public function nextRound()
     {
-        // TODO: Implement nextRound() method.
+        // Find max round
+        // If not max round increment the round
+        // Create new records in scores table if the first round
+        // If po create automatically using makePlayOffOrder()
     }
 
     /**

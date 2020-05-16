@@ -14,8 +14,8 @@ class RegistrationCompetitionTeam extends Migration
     public function up()
     {
         Schema::create('registration_competition_team', function (Blueprint $table) {
-            $table->foreignId('competition_id')->constrained()->onDelete('cascade');
-            $table->foreignId('team_id')->constrained()->onDelete('cascade');
+            $table->foreignId('competition_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('team_id')->constrained()->cascadeOnDelete();
         });
     }
 
