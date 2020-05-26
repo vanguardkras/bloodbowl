@@ -76,8 +76,6 @@ class CompetitionController extends Controller
      */
     public function show(Competition $competition)
     {
-        $competition->checkStrategy();
-        $competition->strategy->createTrophies();
         $competition->load('registeredTeams.user', 'teams.user');
         $competition->setStrategy();
         return view('competitions.show', compact('competition'));

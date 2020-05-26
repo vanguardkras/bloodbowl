@@ -16,7 +16,7 @@ class GroupRounds extends Type
      * @var array
      */
     protected $validationRules = [
-        'groups_size' => 'required|integer|min:2|max:512',
+        'groups_size' => 'required|in:2,4,6,8,10,12,14,16,18,20',
         'group_rounds_wo_po' => 'boolean',
         'group_rounds_play_off' => 'required|in:2,4,8,16,32,64',
     ];
@@ -40,15 +40,44 @@ class GroupRounds extends Type
     {
         if (!$this->competition->round) {
             $this->firstRoundDistribution();
-            session()->flash('success', 'You have successfully started competition ' . $this->competition->name);
+            $this->competition->round++;
+            $this->competition->save();
+            session()->flash('success', __('competitions/management.start') . ' ' . $this->competition->name);
         } elseif ($this->competition->round >= $this->maxRound()) {
             if ($this->checkRequiredCurrentRoundMatches()) {
                 $this->finish();
+                session()->flash('success', __('competitions/management.finish_success'));
             } else {
-                session()->flash('alert', 'You cannot close the competitions while not all the matches are finished');
+                session()->flash('alert', __('competitions/management.finish_error'));
             }
         } elseif ($this->competition->round == ($this->competition->parameters->groups_size - 1)) {
-            // TODO: Select top x from each group.
+            $finalists = $this->getTopsFromGroups($this->competition->parameters->group_rounds_play_off);
+            $order = 0;
+            foreach ($finalists as $finalist) {
+                $score = new Score;
+                $score->competition_id = $this->competition->id;
+                $score->round = $this->competition->round + 1;
+                $score->team_id = $finalist->team_id;
+                $score->order = $order;
+                $score->save();
+                $order++;
+            }
+            $this->competition->round++;
+            $this->competition->save();
+            session()->flash('success', __('competitions/management.next_success'));
+        } elseif ($this->competition->round < ($this->competition->parameters->groups_size - 1)) {
+            if ($this->checkRequiredCurrentRoundMatches()) {
+                $this->competition->round++;
+                $this->competition->save();
+                session()->flash('success', __('competitions/management.next_success'));
+            } else {
+                session()->flash('alert', __('competitions/management.next_error'));
+            }
+        } elseif ($this->competition->round >= $this->competition->parameters->groups_size) {
+            $this->makePlayOffOrder();
+            $this->competition->round++;
+            $this->competition->save();
+            session()->flash('success', __('competitions/management.next_success'));
         }
     }
 
@@ -67,16 +96,17 @@ class GroupRounds extends Type
                 ->scores()
                 ->where('round', $this->competition->round)
                 ->count();
-            $required_matches = $teams_in_round / 2;
         } else {
-            $total_teams = $this->competition->teams()->count();
-            $required_matches = ($total_teams / $groups_size) * ($groups_size - 1);
+            $teams_in_round = $this->competition->teams()->count();
         }
+        $required_matches = $teams_in_round / 2;
+
         return $required_matches === $this->competition->getCurrentRoundPlayedMatches();
     }
 
     /**
      * Create trophies for a finished competition.
+     *
      * @param bool $tops_number
      */
     public function createTrophies($tops_number = false)

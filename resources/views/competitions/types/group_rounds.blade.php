@@ -1,9 +1,17 @@
 <div id="group_rounds" class="competition_type_settings">
     <label for="groups_size">{{ __('competitions/create.group_rounds.size') }}</label>
-    <input type="number" class="form-control col-6"
-           name="groups_size" id="groups_size"
-           min="2" max="512"
-           value="{{ $competition->parameters->groups_size ?? old('groups_size', '4') }}">
+
+    <select class="custom-select"
+            id="groups_size" name="groups_size">
+        @for ($i = 2; $i <= 20; $i += 2)
+            <option value="{{ $i }}"
+                {{ isset($competition->parameters->groups_size) ?
+                    ($competition->parameters->groups_size == $i ? 'selected' : '') :
+                    (old('groups_size') == $i ? 'selected' : '') }}>
+                {{ $i }}
+            </option>
+        @endfor
+    </select>
     <hr>
 
     <label for="group_rounds_play_off">

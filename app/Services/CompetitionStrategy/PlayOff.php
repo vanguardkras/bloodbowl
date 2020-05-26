@@ -11,7 +11,8 @@ class PlayOff extends Type
      */
     public function fillParameters()
     {
-        // this competition type does not contain any parameters
+        // This competition type does not contain any parameters.
+        // Leave this method empty.
     }
 
     /**
@@ -36,6 +37,17 @@ class PlayOff extends Type
             ->where('round', $this->competition->round)
             ->count();
         return ($teams_in_round / 2) === $this->competition->getCurrentRoundPlayedMatches();
+    }
+
+    /**
+     * Writes data about the competition winners.
+     *
+     * @param bool $tops_number
+     * @return mixed|void
+     */
+    protected function createTrophies($tops_number = false)
+    {
+        // TODO: Implement createTrophies() method.
     }
 
     /**

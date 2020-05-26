@@ -64,7 +64,7 @@ abstract class Type
         $this->createTrophies();
 
         //MatchLog::where('competition_id', $this->competition->id)->delete();
-        // Possibly, scores should be removed as well.
+        //Possibly, scores should be removed as well.
     }
 
     /**
@@ -167,4 +167,12 @@ abstract class Type
      * @return bool
      */
     protected abstract function checkRequiredCurrentRoundMatches(): bool;
+
+    /**
+     * Create trophies for a finished competition.
+     *
+     * @param bool $tops_number
+     * @return mixed
+     */
+    protected abstract function createTrophies($tops_number = false);
 }

@@ -75,6 +75,17 @@ class OpenLeague extends Type
     }
 
     /**
+     * Writes data about the competition winners.
+     *
+     * @param bool $tops_number
+     * @return mixed|void
+     */
+    protected function createTrophies($tops_number = false)
+    {
+        // TODO: Implement createTrophies() method.
+    }
+
+    /**
      * Get the max round for the competition.
      *
      * @return int
