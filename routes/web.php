@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Route;
 // Pages route
 Route::get('/', 'PageController@main');
 Route::get('competitions/{competition}/show', 'PageController@competition');
-Route::post('competitions/{competition}/register_team', 'PageController@registerTeam');
 Route::get('user/{user}', 'PageController@user');
 
 //Auth routes
@@ -28,12 +27,14 @@ Route::get(VkAuthController::REDIRECT_URI, 'Auth\VkAuthController@vkCallback');
 // Super Admin routes
 Route::resource('races', 'SuperAdmin\RaceController')->middleware('is_super');
 
-// Profile routes
+// Coaches routes
 Route::middleware('auth')->group(function () {
     Route::get('profile', 'UserController@profile')->middleware('auth');
     Route::patch('profile_data_update', 'UserController@updateData');
     Route::patch('change_password', 'UserController@changePassword');
     Route::patch('become_commissioner', 'UserController@becomeCommissioner');
+    Route::post('competitions/{competition}/register_team', 'PageController@registerTeam');
+    Route::post('results/{competition}', 'PageController@recordResults');
 });
 
 // Teams management routes

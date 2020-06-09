@@ -7,4 +7,5 @@ return [
     'played' => 'Matches played',
     'touchdowns' => 'Total touchdowns',
     'success_rate' => 'Success rate',
+    'coach' => 'Coach',
 ];

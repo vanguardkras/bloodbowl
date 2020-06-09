@@ -55,7 +55,7 @@ class PlayOff extends Type
      *
      * @return int
      */
-    protected function maxRound(): int
+    public function maxRound(): int
     {
         $this->competition->loadCount('teams');
         for ($i = $this->competition->teams_count; $i <= 65536; $i++) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CompetitionTeamRegisterRequest;
+use App\Http\Requests\MatchResultsRequest;
 use App\Models\Competition;
 use App\User;
 use Illuminate\Http\Request;
@@ -52,6 +53,21 @@ class PageController extends Controller
     {
         $this->authorize('registerTeam', $competition);
         $competition->registeredTeams()->sync([$request->team_id]);
+        return back();
+    }
+
+    /**
+     * Add new match results to the competition
+     *
+     * @param MatchResultsRequest $request
+     * @param Competition $competition
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function recordResults(MatchResultsRequest $request, Competition $competition)
+    {
+        $this->authorize('recordResults', $competition);
+        $competition->recordResults($request->all());
         return back();
     }
 

@@ -16,6 +16,8 @@ class CreateHistoriesTable extends Migration
         Schema::create('histories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('competition_id')->constrained();
+            $table->foreignId('race_team_1')->constrained('races');
+            $table->foreignId('race_team_2')->constrained('races');
             $table->unsignedBigInteger('team_id_1');
             $table->unsignedBigInteger('team_id_2');
             $table->unsignedTinyInteger('score_1');

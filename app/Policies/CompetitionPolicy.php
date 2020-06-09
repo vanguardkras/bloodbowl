@@ -94,6 +94,35 @@ class CompetitionPolicy
     }
 
     /**
+     *
+     *
+     * @param User $user
+     * @param Competition $competition
+     * @return bool
+     */
+    public function recordResults(User $user, Competition $competition)
+    {
+        if ($competition->round === 0) {
+            return false;
+        }
+
+        if ($competition->user_id === $user->id) {
+            return true;
+        }
+
+        $team = Team::find(request()->team_1);
+
+        if ($team->competition_id === $competition->id &&
+            $team->user_id === $user->id &&
+            $competition->self_confirm
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Register team public request
      *
      * @param User $user

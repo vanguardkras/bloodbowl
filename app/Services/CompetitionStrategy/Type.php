@@ -4,8 +4,10 @@
 namespace App\Services\CompetitionStrategy;
 
 use App\Models\Competition;
+use App\Models\History;
 use App\Models\MatchLog;
 use App\Models\Score;
+use App\Models\Team;
 use App\Models\Trophy;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,6 +41,19 @@ abstract class Type
     }
 
     /**
+     * Make a classic play of view.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function playOffView() {
+        //TODO: Add logic with receiving the whole table results to insert them
+        $playOffRounds = $this->getPlayOffTeamsNumber();
+        $lastRound = log10($playOffRounds) / log10(2);
+        return view('competitions.types.common_play_off',
+            compact(['playOffRounds', 'lastRound']));
+    }
+
+    /**
      * Change competition instance parameters.
      */
     public abstract function fillParameters();
@@ -48,6 +63,15 @@ abstract class Type
      */
     public abstract function nextRound();
 
+    /**
+     * Record new match results for the competition.
+     * The $result array should be an associative array
+     * with the following keys: 'team_1', 'team_2', 'touchdowns_1', 'touchdowns_2'.
+     *
+     * @param array $results
+     * @return mixed
+     */
+    public abstract function recordResults(array $results);
 
     /**
      * Competition finishing procedures.
@@ -116,6 +140,42 @@ abstract class Type
     }
 
     /**
+     * Create match log and history records.
+     *
+     * @param array $results
+     */
+    protected function createMatchLogAndHistory(array $results)
+    {
+        $team_1 = Team::find($results['team_1'], ['name', 'race_id']);
+        $team_2 = Team::find($results['team_2'], ['name', 'race_id']);
+
+        $history = new History();
+        $history->competition_id = $this->competition->id;
+        $history->team_id_1 = $results['team_1'];
+        $history->team_id_2 = $results['team_2'];
+        $history->race_team_1 = $team_1->race_id;
+        $history->race_team_2 = $team_2->race_id;
+        $history->team_name_1 = $team_1->name;
+        $history->team_name_2 = $team_2->name;
+        $history->score_1 = $results['touchdowns_1'];
+        $history->score_2 = $results['touchdowns_2'];
+        $history->date = today()->toDateString();
+        $history->save();
+
+        $mathLog = new MatchLog();
+        $mathLog->competition_id = $this->competition->id;
+        $mathLog->team_id_1 = $results['team_1'];
+        $mathLog->team_id_2 = $results['team_2'];
+        $mathLog->score_1 = $results['touchdowns_1'];
+        $mathLog->score_2 = $results['touchdowns_2'];
+        $mathLog->round = $this->competition->round;
+        $mathLog->confirmed = $this->competition->self_confirm >= 2;
+        $mathLog->date = today()->toDateString();
+        $mathLog->history_id = $history->id;
+        $mathLog->save();
+    }
+
+    /**
      * Create trophies from a scores collection.
      *
      * @param $team_id
@@ -154,11 +214,18 @@ abstract class Type
     }
 
     /**
+     * Get current competition number of play off rounds.
+     *
+     * @return mixed
+     */
+    protected abstract function getPlayOffTeamsNumber();
+
+    /**
      * Get the max round for the competition.
      *
      * @return int
      */
-    protected abstract function maxRound(): int;
+    public abstract function maxRound(): int;
 
     /**
      * Get the number of matches should be played for the current round in order

@@ -73,6 +73,18 @@ class Competition extends Model
     }
 
     /**
+     * Get the max round of the competition.
+     *
+     * @return int
+     * @throws \ReflectionException
+     */
+    public function getMaxRound()
+    {
+        $this->checkStrategy();
+        return $this->strategy->maxRound();
+    }
+
+    /**
      * Fill input parameters basing on the strategy.
      *
      * @throws \ReflectionException
@@ -123,6 +135,18 @@ class Competition extends Model
     public function races()
     {
         return $this->belongsToMany(Race::class);
+    }
+
+    /**
+     * Add new match results to the current competition.
+     *
+     * @param array $results
+     * @throws \ReflectionException
+     */
+    public function recordResults(array $results)
+    {
+        $this->checkStrategy();
+        $this->strategy->recordResults($results);
     }
 
     /**

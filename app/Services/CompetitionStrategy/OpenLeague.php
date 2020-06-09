@@ -90,7 +90,7 @@ class OpenLeague extends Type
      *
      * @return int
      */
-    protected function maxRound(): int
+    public function maxRound(): int
     {
         $max = 1;
         if ($this->competition->parameters->open_league_play_off) {

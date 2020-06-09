@@ -4,6 +4,7 @@
 namespace App\Services\CompetitionStrategy;
 
 
+use App\Models\MatchLog;
 use App\Models\Score;
 use App\Models\Trophy;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +32,17 @@ class GroupRounds extends Type
         $parameters->group_rounds_play_off = request()->group_rounds_wo_po
             ? 0 : request()->group_rounds_play_off;
         $this->competition->parameters = $parameters;
+    }
+
+    public function getGroupStageTeams()
+    {
+        $max_round = $this->competition->parameters->groups_size - 1;
+        return $this->competition->scores()
+            ->where('round', '>=', 0)
+            ->where('round', '<=', $max_round)
+            ->orderBy('order')
+            ->with('team.user')
+            ->get();
     }
 
     /**
@@ -99,7 +111,7 @@ class GroupRounds extends Type
         } else {
             $teams_in_round = $this->competition->teams()->count();
         }
-        $required_matches = $teams_in_round / 2;
+        $required_matches = intval($teams_in_round / 2);
 
         return $required_matches === $this->competition->getCurrentRoundPlayedMatches();
     }
@@ -140,13 +152,53 @@ class GroupRounds extends Type
      *
      * @return int
      */
-    protected function maxRound(): int
+    public function maxRound(): int
     {
         $max = $this->competition->parameters->groups_size - 1;
         if ($this->competition->parameters->group_rounds_play_off) {
             $max += log10($this->competition->parameters->group_rounds_play_off) / log10(2);
         }
         return $max;
+    }
+
+    /**
+     * Record new match results for the competition.
+     *
+     * @param array $results
+     * @return mixed
+     */
+    public function recordResults(array $results)
+    {
+        //return back()->with('alert', 'It is not gonna work');
+
+        //TODO: Check if it is PO and select either from groups or grom PO
+        $scores = $this->competition->scores()
+            ->where('team_id', $results['team_1'])
+            ->orWhere('team_id', $results['team_2'])
+            ->get();
+
+        if ($scores->count() !== 2 || $scores[0]->round !== $scores[1]->round) {
+            return back()->with('alert', 'Something went wrong. Contact with the administrator.');
+        }
+
+        if ($this->competition->round <= $this->competition->parameters->groups_size) {
+            //TODO: in case of groups, check if the teams are from the same group
+        } else {
+            // TODO: in case of PO check that teams play against each other.
+        }
+
+        //$this->createMatchLogAndHistory($results);
+        back()->with('success', 'The results have been successfully saved.');
+    }
+
+    /**
+     * Get current competition number of play off rounds.
+     *
+     * @return mixed|void
+     */
+    protected function getPlayOffTeamsNumber()
+    {
+        return $this->competition->parameters->group_rounds_play_off;
     }
 
     /**
@@ -194,7 +246,8 @@ class GroupRounds extends Type
      * @param $number
      * @return \Illuminate\Support\Collection
      */
-    private function getTopsFromGroups($number) {
+    private function getTopsFromGroups($number)
+    {
         $groups_size = $this->competition->parameters->groups_size;
         $groups_number = ceil($this->competition->teams()->count() / $groups_size);
 

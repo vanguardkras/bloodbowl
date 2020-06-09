@@ -151,9 +151,11 @@ class CompetitionController extends Controller
      * @param Competition $competition
      * @return \Illuminate\Http\RedirectResponse
      * @throws \ReflectionException
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function nextRound(Competition $competition)
     {
+        $this->authorize('update', $competition);
         $competition->nextRound();
         return back();
     }

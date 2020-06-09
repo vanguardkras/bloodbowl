@@ -18,5 +18,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Score extends Model
 {
-    //
+    /**
+     * Get current competitions team
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
 }
