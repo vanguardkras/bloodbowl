@@ -63,6 +63,7 @@ class PageController extends Controller
      * @param Competition $competition
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \ReflectionException
      */
     public function recordResults(MatchResultsRequest $request, Competition $competition)
     {

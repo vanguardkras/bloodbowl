@@ -32,7 +32,9 @@
                         <td>
                             <select name="team_1" class="custom-select">
                                 @foreach ($competition->teams as $team)
-                                    <option value="{{ $team->id }}">{{ $team->name }} ({{ $team->race->name }})</option>
+                                    <option value="{{ $team->id }}"
+                                    @if (old('team_1') == $team->id) selected @endif
+                                    >{{ $team->name }} ({{ $team->race->name }})</option>
                                 @endforeach
                             </select>
                         </td>

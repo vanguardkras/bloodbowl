@@ -45,12 +45,18 @@ abstract class Type
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function playOffView() {
-        //TODO: Add logic with receiving the whole table results to insert them
+    public function playOffView()
+    {
         $playOffRounds = $this->getPlayOffTeamsNumber();
         $lastRound = log10($playOffRounds) / log10(2);
+        $startRound = $this->getPlayOffStartRound();
+        $scores = $this->competition->scores()
+            ->where('round', '>=', $startRound)
+            ->with('team.user')
+            ->with('team.race')
+            ->get();
         return view('competitions.types.common_play_off',
-            compact(['playOffRounds', 'lastRound']));
+            compact(['playOffRounds', 'lastRound', 'startRound', 'scores']));
     }
 
     /**
@@ -78,17 +84,14 @@ abstract class Type
      */
     protected function finish()
     {
-        if ($this->round != $this->maxRound()) {
-            return;
+        if ($this->competition->round < $this->maxRound() || $this->competition->finished) {
+            return back()->with('alert', 'You cannot finish the competition so far.');
         }
 
         $this->competition->finished = today()->toDateString();
         $this->competition->save();
 
         $this->createTrophies();
-
-        //MatchLog::where('competition_id', $this->competition->id)->delete();
-        //Possibly, scores should be removed as well.
     }
 
     /**
@@ -110,16 +113,7 @@ abstract class Type
                 ->orderBy('touchdowns', 'DESC')
                 ->limit($number_of_players)
                 ->get();
-            for ($i = 0; $i < $number_of_players; $i++) {
-                $score = new Score;
-                $score->competition_id = $this->competition->id;
-                $score->round = $this->competition->round + 1;
-                $score->team_id = $current_scores[$i]->team_id;
-                $score->order = $i >= ($number_of_players / 2) ?
-                    (($number_of_players - $i - 1) * 2 + 1) :
-                    2 * $i;
-                $score->save();
-            }
+            $this->createScoresForFirstPlayOffRound($current_scores, $number_of_players);
         } else {
             $current_scores = $this->competition
                 ->scores()
@@ -143,12 +137,14 @@ abstract class Type
      * Create match log and history records.
      *
      * @param array $results
+     * @param bool $round
      */
-    protected function createMatchLogAndHistory(array $results)
+    protected function createMatchLogAndHistory(array $results, $round = false)
     {
-        $team_1 = Team::find($results['team_1'], ['name', 'race_id']);
-        $team_2 = Team::find($results['team_2'], ['name', 'race_id']);
+        $team_1 = Team::find($results['team_1']);
+        $team_2 = Team::find($results['team_2']);
 
+        // Add history
         $history = new History();
         $history->competition_id = $this->competition->id;
         $history->team_id_1 = $results['team_1'];
@@ -162,17 +158,50 @@ abstract class Type
         $history->date = today()->toDateString();
         $history->save();
 
+        // Add match log
         $mathLog = new MatchLog();
         $mathLog->competition_id = $this->competition->id;
         $mathLog->team_id_1 = $results['team_1'];
         $mathLog->team_id_2 = $results['team_2'];
         $mathLog->score_1 = $results['touchdowns_1'];
         $mathLog->score_2 = $results['touchdowns_2'];
-        $mathLog->round = $this->competition->round;
+        $mathLog->round = $round ?: $this->competition->round;
         $mathLog->confirmed = $this->competition->self_confirm >= 2;
         $mathLog->date = today()->toDateString();
         $mathLog->history_id = $history->id;
         $mathLog->save();
+
+        // Update teams statistics
+        $team_1->touchdowns += $results['touchdowns_1'];
+        $team_2->touchdowns += $results['touchdowns_2'];
+        $team_1->played++;
+        $team_2->played++;
+        $team_1->wins += $results['touchdowns_1'] > $results['touchdowns_2'] ? 1 : 0;
+        $team_2->wins += $results['touchdowns_2'] > $results['touchdowns_1'] ? 1 : 0;
+        $team_1->draws += $results['touchdowns_1'] === $results['touchdowns_2'] ? 1 : 0;
+        $team_2->draws += $results['touchdowns_1'] === $results['touchdowns_2'] ? 1 : 0;
+        $team_1->save();
+        $team_2->save();
+    }
+
+    /**
+     * Initial play off distribution where the first plays against the last etc.
+     *
+     * @param $scores
+     * @param $number_of_players
+     */
+    protected function createScoresForFirstPlayOffRound($scores, $number_of_players)
+    {
+        for ($i = 0; $i < $number_of_players; $i++) {
+            $score = new Score;
+            $score->competition_id = $this->competition->id;
+            $score->round = $this->competition->round + 1;
+            $score->team_id = $scores[$i]->team_id;
+            $score->order = $i >= ($number_of_players / 2) ?
+                (($number_of_players - $i - 1) * 2 + 1) :
+                2 * $i;
+            $score->save();
+        }
     }
 
     /**
@@ -187,6 +216,7 @@ abstract class Type
         $trophy->competition_id = $this->competition->id;
         $trophy->team_id = $team_id;
         $trophy->position = $position;
+        $trophy->save();
     }
 
     /**
@@ -196,22 +226,56 @@ abstract class Type
      */
     protected function createPlayOffTrophies($tops_number = false)
     {
-        $scores = $this->competition->scores()
+        $team_ids = $this->competition->scores()
             ->orderBy('round', 'DESC')
             ->orderBy('score', 'DESC')
             ->orderBy('touchdowns_diff', 'DESC')
             ->orderBy('touchdowns', 'DESC')
-            ->limit($tops_number ?: $this->competition->tops_number)
-            ->get();
+            ->get('team_id')
+            ->pluck('team_id')
+            ->unique()
+            ->take($tops_number ?: $this->competition->tops_number);
 
         $position = 1;
-        foreach ($scores as $score) {
-            $this->createTrophy($score->team_id, $position);
+        foreach ($team_ids as $team_id) {
+            $this->createTrophy($team_id, $position);
             $position++;
         }
 
-        return $scores;
+        return $team_ids;
     }
+
+    /**
+     * Format results to an associative array with keys as teams ids
+     * and touchdowns, points parameters.
+     *
+     * @param array $results
+     * @return array[]
+     */
+    protected function formatResults(array $results)
+    {
+        return [
+            intval($results['team_1']) => [
+                'touchdowns' => $results['touchdowns_1'],
+                'touchdowns_diff' => $results['touchdowns_1'] - $results['touchdowns_2'],
+                'points' => $results['touchdowns_1'] > $results['touchdowns_2'] ? $this->competition->winner_points :
+                    ($results['touchdowns_1'] === $results['touchdowns_2'] ? 1 : 0),
+            ],
+            intval($results['team_2']) => [
+                'touchdowns' => $results['touchdowns_2'],
+                'touchdowns_diff' => $results['touchdowns_2'] - $results['touchdowns_1'],
+                'points' => $results['touchdowns_2'] > $results['touchdowns_1'] ? $this->competition->winner_points :
+                    ($results['touchdowns_1'] === $results['touchdowns_2'] ? 1 : 0),
+            ],
+        ];
+    }
+
+    /**
+     * Get current competition first round of play off
+     *
+     * @return mixed
+     */
+    protected abstract function getPlayOffStartRound();
 
     /**
      * Get current competition number of play off rounds.

@@ -16,19 +16,19 @@
         <div class="col-md-6">
             <h2>{{ __('teams.statistics') }}</h2>
             <div>
-                <strong>Количество игр:</strong> 3
+                <strong>Количество игр:</strong> {{ $team->played }}
             </div>
             <div>
-                <strong>Процент побед:</strong> 33%
+                <strong>Успешных игр:</strong> {{ $team->successful_games_percentage }}%
             </div>
             <div>
-                <strong>Количество тачдаунов:</strong> 4
+                <strong>Количество ничьих:</strong> {{ $team->draws }}
             </div>
             <div>
-                <strong>Принято участий в соревнованиях:</strong> 1
+                <strong>Количество тачдаунов:</strong> {{ $team->touchdowns }}
             </div>
             <div>
-                <strong>Количество трофеев:</strong> 1
+                <strong>Количество трофеев:</strong> {{ $team->trophies()->count() }}
             </div>
             <hr>
         </div>
@@ -45,27 +45,30 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="table-danger">
-            <th scope="row">1</th>
-            <td>Разрушители (Орки)</td>
-            <td>0 - 6</td>
-            <td>Кубок чемпионов</td>
-            <td class="d-none d-md-table-cell">21.10.2020</td>
-        </tr>
-        <tr class="table-success">
-            <th scope="row">2</th>
-            <td>Продуватели (Гоблины)</td>
-            <td>3 - 1</td>
-            <td>Кубок чемпионов</td>
-            <td class="d-md-none d-none d-md-table-cell">22.10.2020</td>
-        </tr>
-        <tr class="table-secondary">
-            <th scope="row">3</th>
-            <td>Стоятели (Нурглиты)</td>
-            <td>1 - 1</td>
-            <td>Кубок чемпионов</td>
-            <td class="d-md-none d-none d-md-table-cell">23.10.2020</td>
-        </tr>
+        @foreach ($history as $record)
+            <?php $success = $record->getSuccess($team->id); ?>
+            <tr class="table-{{ $success === 'win' ? 'success' : ($success === 'loss' ? 'danger' : 'secondary') }}">
+                <td>{{ $loop->iteration }}</td>
+                <td>
+                    @if ($record->team)
+                        <a href="/teams/{{ $record->team->id }}">
+                            {{ $record->team->name }}
+                        </a>
+                    @else
+                        {{ $record->team_name }}
+                    @endif
+                    ({{ $record->race_name }})
+                </td>
+                <td>
+                    {{ $team->id == $record->team_id_1 ? $record->score_1 : $record->score_2 }}
+                    :
+                    {{ $team->id == $record->team_id_2 ? $record->score_1 : $record->score_2 }}
+                </td>
+                <td><a href="/competitions/{{ $record->competition->id }}/show">{{ $record->competition->name }}</a>
+                </td>
+                <td class="d-none d-md-table-cell">{{ $record->date }}</td>
+            </tr>
+        @endforeach
         </tbody>
     </table>
 @endsection

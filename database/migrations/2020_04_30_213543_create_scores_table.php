@@ -19,7 +19,7 @@ class CreateScoresTable extends Migration
             $table->foreignId('team_id')->constrained();
             $table->unsignedSmallInteger('score')->default(0);
             $table->unsignedSmallInteger('touchdowns')->default(0);
-            $table->unsignedSmallInteger('touchdowns_diff')->default(0);
+            $table->smallInteger('touchdowns_diff')->default(0);
             $table->unsignedSmallInteger('round')->default(0);
             $table->unsignedSmallInteger('order')->default(0);
             $table->timestamps();

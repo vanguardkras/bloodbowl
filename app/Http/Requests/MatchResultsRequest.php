@@ -25,8 +25,8 @@ class MatchResultsRequest extends FormRequest
     public function rules()
     {
         return [
-            'team_1' => 'required|integer',
-            'team_2' => 'required|integer',
+            'team_1' => 'required|integer|different:team_2',
+            'team_2' => 'required|integer|different:team_1',
             'touchdowns_1' => 'required|integer|between:0,8',
             'touchdowns_2' => 'required|integer|between:0,8',
         ];

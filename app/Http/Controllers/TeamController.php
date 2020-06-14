@@ -19,7 +19,7 @@ class TeamController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
@@ -31,7 +31,7 @@ class TeamController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function create()
     {
@@ -54,7 +54,7 @@ class TeamController extends Controller
      * Store a newly created resource in storage.
      *
      * @param TeamCreateRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @throws \Gumlet\ImageResizeException
      */
     public function store(TeamCreateRequest $request)
@@ -80,20 +80,21 @@ class TeamController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Team $team
-     * @return \Illuminate\Http\Response
+     * @param Team $team
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Team $team)
     {
-        return view('teams.show', compact('team'));
+        $history = $team->history();
+        return view('teams.show', compact('team', 'history'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Team $team
-     * @return \Illuminate\Http\Response
+     * @param Team $team
+     * @return string
      * @throws \Gumlet\ImageResizeException
      */
     public function update(Request $request, Team $team)
@@ -107,8 +108,8 @@ class TeamController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Team $team
-     * @return \Illuminate\Http\Response
+     * @param Team $team
+     * @return \Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
     public function destroy(Team $team)

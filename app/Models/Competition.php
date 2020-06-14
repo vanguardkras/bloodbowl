@@ -5,6 +5,7 @@ namespace App\Models;
 use App\User;
 use App\Services\CompetitionStrategy\CompetitionStrategyException;
 use App\Services\CompetitionStrategy\Type;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -25,6 +26,8 @@ use Illuminate\Support\Str;
  * @property int round
  * @property string registration_end
  * @property int max_teams
+ * @property bool finished
+ * @property Collection scores
  *
  * @package App\Models
  */
