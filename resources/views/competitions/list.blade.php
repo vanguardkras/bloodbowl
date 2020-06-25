@@ -52,13 +52,13 @@
         @endforeach
     </div>
     <hr>
-    <h2 class="my-3">Competitions archive</h2>
+    <h2 class="my-3">{{ __('competitions/list.archive') }}</h2>
     <table class="table mx-auto table-sm" id="archive">
         <thead>
         <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Type</th>
-            <th scope="col">Finished</th>
+            <th scope="col">{{ __('competitions/list.name') }}</th>
+            <th scope="col">{{ __('competitions/list.type') }}</th>
+            <th scope="col">{{ __('competitions/list.finished') }}</th>
         </tr>
         </thead>
         <tbody>

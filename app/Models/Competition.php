@@ -99,6 +99,16 @@ class Competition extends Model
     }
 
     /**
+     * Get current competition history.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function histories()
+    {
+        return $this->hasMany(History::class);
+    }
+
+    /**
      * Get current competition logo
      *
      * @return string

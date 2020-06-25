@@ -46,7 +46,9 @@
         </thead>
         <tbody>
         @foreach ($history as $record)
-            <?php $success = $record->getSuccess($team->id); ?>
+            @php
+                $success = $record->getSuccess($team->id);
+            @endphp
             <tr class="table-{{ $success === 'win' ? 'success' : ($success === 'loss' ? 'danger' : 'secondary') }}">
                 <td>{{ $loop->iteration }}</td>
                 <td>

@@ -22,7 +22,6 @@ use Illuminate\Database\Eloquent\Model;
 class History extends Model
 {
     protected $with = [
-        'competition',
         'race_1',
         'race_2'
     ];

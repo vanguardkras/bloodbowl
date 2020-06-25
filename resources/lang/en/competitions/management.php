@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'title' => 'Manage competition',
     'start' => 'You have successfully started competition',
     'finish_success' => 'The competition is finished',
     'next_success' => 'The next round has been started',
@@ -9,4 +10,12 @@ return [
     'start_button' => 'Start the competition',
     'finish_button' => 'Finish the competition',
     'next_round_button' => 'Start the next round',
+    'applications' => 'Applications',
+    'name' => 'Name',
+    'race' => 'Race',
+    'coach' => 'Coach',
+    'actions' => 'Actions',
+    'approve' => 'Approve',
+    'reject' => 'Reject',
+    'registered_teams' => 'Registered Teams',
 ];

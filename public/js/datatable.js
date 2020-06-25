@@ -105,7 +105,7 @@ $(document).ready(function () {
     };
   }
 
-  $('#statistics, #archive').DataTable(options);
+  $('#statistics, #archive, #history').DataTable(options);
 });
 
 /***/ }),

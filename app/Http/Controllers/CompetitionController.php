@@ -76,9 +76,15 @@ class CompetitionController extends Controller
      */
     public function show(Competition $competition)
     {
-        $competition->load('registeredTeams.user', 'teams.user');
+        $competition->load(
+            'registeredTeams.user',
+            'teams.user'
+        );
         $competition->setStrategy();
-        return view('competitions.show', compact('competition'));
+
+        $histories = $competition->histories()->with('team_1.user', 'team_2.user')->orderBy('created_at')->get();
+
+        return view('competitions.show', compact('competition', 'histories'));
     }
 
     /**

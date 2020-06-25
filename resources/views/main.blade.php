@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="mb-3">Blood Bowl в Красноярске</h1>
+    <h1 class="mb-3">Blood Bowl Tournament System (BBTS)</h1>
     <div class="row">
         <div class="col-lg-6 col-md-12 shadow">
-            <h3 class="text-info">Открыта регистрация на соревнования:</h3>
+            <h3 class="text-info">{{ __('main.registration_open') }}</h3>
             <table class="table table-sm">
                 <thead>
                 <tr>
-                    <th>Название</th>
-                    <th>Тип</th>
-                    <th>Регистрация до</th>
+                    <th>{{ __('main.name') }}</th>
+                    <th>{{ __('main.type') }}</th>
+                    <th>{{ __('main.registration_end') }}</th>
                 </tr>
                 </thead>
                 <tbody>

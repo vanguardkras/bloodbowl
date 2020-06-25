@@ -6,5 +6,5 @@ $(document).ready(function () {
     if (lang === 'ru') {
         options = {"language": {"url": "/js/datatables_ru.json"}}
     }
-    $('#statistics, #archive').DataTable(options);
+    $('#statistics, #archive, #history').DataTable(options);
 });

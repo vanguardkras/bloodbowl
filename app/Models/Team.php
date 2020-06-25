@@ -47,6 +47,9 @@ class Team extends Model
      */
     public function getSuccessfulGamesPercentageAttribute()
     {
+        if ($this->played == 0) {
+            return 0;
+        }
         return intval(round(100 * ($this->draws + $this->wins) / $this->played));
     }
 

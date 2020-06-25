@@ -27,7 +27,7 @@
         <hr>
         @if (!$user->name)
             <div class="alert alert-primary" role="alert">
-                As you do not have any name, you can tell a competition organizer your ID instead:<br>
+                {{ __('profile.no_name_id') }}:<br>
                 <b>ID: {{ $user->id }}</b>
             </div>
         @else

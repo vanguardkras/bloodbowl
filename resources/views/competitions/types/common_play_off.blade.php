@@ -1,4 +1,3 @@
-{{-- TODO: Insert current results from the scores table --}}
 <div class="shadow-lg p-3">
     <h1>{{ __('competitions/main.play_off_header') }}</h1>
     <table class="table table-sm">
@@ -24,7 +23,7 @@
                                         <span class="small"><span class="text-info">{{ __('coach.coach') }}:</span> <a
                                                 href="/user/{{ $score->team->user->id }}">{{ $score->team->user->name ?: __('auth.nameless_user') }}</a></span>
                                     @else
-                                        Ожидается...
+                                        {{ __('competitions/main.awaiting') }}
                                     @endif
                                 </div>
                                 @if ($col != $lastRound)
