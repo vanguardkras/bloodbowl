@@ -50,7 +50,7 @@
                 </ul>
             </div>
             @if ($competition->finished)
-                <p class="text-danger">{{ __('competitions/show_public.finished') }}</p>
+                <p class="text-danger">{{ __('competitions/show_public.finished') }} {{ $competition->finished }}</p>
             @elseif ($competition->round)
 
             @elseif (today()->toDateString() > $competition->registration_end)
@@ -98,4 +98,54 @@
             @endif
         </div>
     </div>
+
+    {{-- Section of the started competition --}}
+
+    {{-- Competition information section --}}
+    @if ($competition->round)
+        @include('competitions.types.' . $competition->type . '_data')
+    @endif
+
+    {{-- History section --}}
+    @if ($competition->round)
+        <h3 class="mt-4">{{ __('competitions/main.history') }}</h3>
+        <table class="table mx-auto table-sm table-striped" id="history">
+            <thead>
+            <tr>
+                <th scope="col">{{ __('competitions/main.coach') }} 1</th>
+                <th scope="col">{{ __('competitions/main.team') }} 1</th>
+                <th scope="col">{{ __('competitions/main.score') }}</th>
+                <th scope="col">{{ __('competitions/main.team') }} 2</th>
+                <th scope="col">{{ __('competitions/main.coach') }} 2</th>
+                <th scope="col">{{ __('competitions/main.date') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach ($histories as $history)
+                <tr>
+                    <td>
+                        <a href="/user/{{ $history->team_1->user->id }}">{{ $history->team_1->user->name ?? __('auth.nameless_user') }}</a>
+                    </td>
+                    <td><a href="/teams/{{ $history->team_1->id }}">{{ $history->team_1->name }}</a>
+                        ({{ $history->race_1->name() }})
+                    </td>
+                    <td>{{ $history->score_1 }} : {{ $history->score_2 }}</td>
+                    <td><a href="/teams/{{ $history->team_1->id }}">{{ $history->team_2->name }}</a>
+                        ({{ $history->race_2->name() }})
+                    </td>
+                    <td>
+                        <a href="/user/{{ $history->team_2->user->id }}">{{ $history->team_2->user->name ?? __('auth.nameless_user') }}</a>
+                    </td>
+                    <td>{{ $history->date }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    @endif
+@endsection
+
+@section('includes')
+    <link rel="stylesheet" type="text/css" href="/css/datatables.min.css"/>
+    <script type="text/javascript" src="/js/datatables.min.js" defer></script>
+    <script type="text/javascript" src="/js/datatable.js" defer></script>
 @endsection

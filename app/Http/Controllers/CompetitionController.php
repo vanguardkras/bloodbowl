@@ -80,6 +80,7 @@ class CompetitionController extends Controller
             'registeredTeams.user',
             'teams.user'
         );
+
         $competition->setStrategy();
 
         $histories = $competition->histories()->with('team_1.user', 'team_2.user')->orderBy('created_at')->get();

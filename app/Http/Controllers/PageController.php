@@ -22,11 +22,19 @@ class PageController extends Controller
             $query->select('id', 'username');
         }])->loadCount('teams')->load('races');
 
+        $competition->setStrategy();
+
         if (auth()->check()) {
             auth()->user()->registered_team = auth()->user()->registeredTeam($competition->id);
             auth()->user()->approved_team = auth()->user()->approvedTeam($competition->id);
         }
-        return view('competition', compact('competition'));
+
+        $histories = $competition->histories()->with('team_1.user', 'team_2.user')->orderBy('created_at')->get();
+
+        return view('competition', compact([
+            'competition',
+            'histories'
+            ]));
     }
 
     /**
