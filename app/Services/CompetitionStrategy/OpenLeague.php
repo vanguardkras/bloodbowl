@@ -3,6 +3,8 @@
 
 namespace App\Services\CompetitionStrategy;
 
+use App\Models\Score;
+use App\Models\Trophy;
 
 class OpenLeague extends Type
 {
@@ -46,14 +48,67 @@ class OpenLeague extends Type
     }
 
     /**
+     * Get scores data for informational pages
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getScores()
+    {
+       return $this->competition->scores()
+            ->where('round', '=', 1)
+            ->orderBy('order')
+            ->with('team.user')
+            ->get();
+
+        dd($temp);
+    }
+
+    /**
      * Start the next competition round.
      */
     public function nextRound()
     {
-        // Find max round
-        // If not max round increment the round
-        // Create new records in scores table if the first round
-        // If po create automatically using makePlayOffOrder()
+        if ($this->competition->round >= $this->maxRound()) { // Last round
+            if ($this->checkRequiredCurrentRoundMatches()) {
+                $this->makePlayOffOrder();
+                $this->finish();
+                session()->flash('success', __('competitions/management.finish_success'));
+            } else {
+                session()->flash('alert', __('competitions/management.finish_error'));
+            }
+
+        } elseif ($this->competition->round === 0) { // First round
+            foreach ($this->competition->teams as $team) {
+                $score = new Score();
+                $score->competition_id = $this->competition->id;
+                $score->team_id = $team->id;
+                $score->round = 1;
+                $score->save();
+            }
+            $this->competition->round++;
+            $this->competition->save();
+            session()->flash('success', __('competitions/management.start') . ' ' . $this->competition->name);
+
+        } elseif ($this->competition->round === 1) { // End of the main phase
+            $this->makePlayOffOrder($this->competition->parameters->open_league_play_off);
+            $this->competition->round++;
+            $this->competition->save();
+            session()->flash('success', __('competitions/management.next_success'));
+        }
+    }
+
+    /**
+     * Get the max round for the competition.
+     *
+     * @return int
+     */
+    public function maxRound(): int
+    {
+        $max = 1;
+        if ($this->competition->parameters->open_league_play_off) {
+            $max += log10($this->competition->parameters->open_league_play_off) / log10(2);
+        }
+        return $max;
     }
 
     /**
@@ -75,27 +130,157 @@ class OpenLeague extends Type
     }
 
     /**
-     * Writes data about the competition winners.
+     * Record new match results for the competition.
      *
-     * @param bool $tops_number
-     * @return mixed|void
+     * @param array $results
+     * @return mixed
+     * @throws \ReflectionException
      */
-    protected function createTrophies($tops_number = false)
+    public function recordResults(array $results)
     {
-        // TODO: Implement createTrophies() method.
+        if ($this->competition->round === 1) {
+            // Check if it wasn't the last game of the team against the same team
+            if (!$this->competition->parameters->one_team_row) {
+                $team_1_last_log = $this->competition->matchLogs()
+                    ->where('team_id_1', $results['team_1'])
+                    ->orWhere('team_id_2', $results['team_1'])
+                    ->latest()
+                    ->first();
+                $team_2_last_log = $this->competition->matchLogs()
+                    ->where('team_id_1', $results['team_2'])
+                    ->orWhere('team_id_2', $results['team_2'])
+                    ->latest()
+                    ->first();
+
+                if (isset($team_1_last_log) && isset($team_2_last_log)) {
+                    if (
+                        (($team_1_last_log->team_id_1 == $results['team_1'] && $team_1_last_log->team_id_2 == $results['team_2']) ||
+                            ($team_1_last_log->team_id_1 == $results['team_2'] && $team_1_last_log->team_id_2 == $results['team_1'])) ||
+                        (($team_2_last_log->team_id_1 == $results['team_1'] && $team_2_last_log->team_id_2 == $results['team_2']) ||
+                            ($team_2_last_log->team_id_1 == $results['team_2'] && $team_2_last_log->team_id_2 == $results['team_1']))
+                    ) {
+                        return back()->with('alert', 'One of the teams last match was against the same team');
+                    }
+                }
+            }
+
+            // Check if the teams have reached their maximum games number
+            if ($this->competition->parameters->max_one_team_games) {
+                $team_1_games = $this->competition->matchLogs()
+                    ->where('team_id_1', $results['team_1'])
+                    ->orWhere('team_id_2', $results['team_1'])
+                    ->count();
+
+                $team_2_games = $this->competition->matchLogs()
+                    ->where('team_id_1', $results['team_2'])
+                    ->orWhere('team_id_2', $results['team_2'])
+                    ->count();
+
+                if (
+                    $team_1_games >= $this->competition->parameters->max_games ||
+                    $team_2_games >= $this->competition->parameters->max_games
+                ) {
+                    return back()->with('alert', 'One of the teams has reached their maximum games number');
+                }
+            }
+
+            // Check if the teams have already played maximum games against each other
+            if ($this->competition->parameters->max_one_team_games) {
+                $games = $this->competition->matchLogs()
+                    ->where(function ($query) use ($results) {
+                        $query
+                            ->where(function ($query) use ($results) {
+                                $query->where('team_id_1', $results['team_1'])
+                                    ->where('team_id_2', $results['team_2']);
+                            })
+                            ->orWhere(function ($query) use ($results) {
+                                $query->where('team_id_1', $results['team_2'])
+                                    ->where('team_id_2', $results['team_1']);
+                            });
+                    })
+                    ->count();
+
+                if ($games >= $this->competition->parameters->max_one_team_games) {
+                    return back()->with('alert', 'These teams have already reached their maximum number of games against each other');
+                }
+            }
+
+            // Get scores of the current teams
+            $scores = $this->competition->scores()
+                ->where(function ($query) use ($results) {
+                    $query->where('team_id', $results['team_1'])
+                        ->orWhere('team_id', $results['team_2']);
+                })
+                ->get()
+                ->keyBy('team_id');
+
+            foreach ($this->formatResults($results) as $key => $result) {
+                $scores[$key]->touchdowns += $result['touchdowns'];
+                $scores[$key]->touchdowns_diff += $result['touchdowns_diff'];
+                $scores[$key]->score += $result['points'];
+                $scores[$key]->save();
+            }
+
+            $this->createMatchLogAndHistory($results, 1);
+
+            return back()->with('success', 'The results have been successfully saved.');
+
+        } elseif ($this->competition->round <= $this->competition->getMaxRound()) {
+            $this->recordPlayOffResults($results);
+        }
+
     }
 
     /**
-     * Get the max round for the competition.
-     *
-     * @return int
+     * Create trophies for a finished competition.
      */
-    public function maxRound(): int
+    protected function createTrophies()
     {
-        $max = 1;
-        if ($this->competition->parameters->open_league_play_off) {
-            $max += log10($this->competition->parameters->open_league_play_off) / log10(2);
+        $po_teams = $this->competition->parameters->open_league_play_off;
+
+        if ($this->competition->tops_number <= $po_teams) {
+            $this->createPlayOffTrophies();
+        } else {
+            $this->createPlayOffTrophies($po_teams);
+            $scores = $this->competition->scores()
+                ->where('round', 1)
+                ->orderBy('score', 'DESC')
+                ->orderBy('touchdowns_diff', 'DESC')
+                ->orderBy('touchdowns', 'DESC')
+                ->offset($po_teams)
+                ->limit($this->competition->tops_number - $po_teams)
+                ->get();
+
+            $position = $po_teams + 1;
+
+            foreach ($scores as $score) {
+                $trophy = new Trophy;
+                $trophy->competition_id = $this->competition->id;
+                $trophy->team_id = $score->team_id;
+                $trophy->position = $position++;
+                $trophy->save();
+            }
+
         }
-        return $max;
+    }
+
+    /**
+     * Get current competition first round of play off
+     *
+     * @return mixed
+     */
+    protected function getPlayOffStartRound()
+    {
+        return 2;
+    }
+
+    /**
+     * Get current competition number of play off rounds.
+     *
+     * @return mixed|void
+     */
+    protected function getPlayOffTeamsNumber()
+    {
+        return $this->competition->parameters->open_league_play_off;
     }
 }

@@ -78,12 +78,17 @@ class CompetitionController extends Controller
     {
         $competition->load(
             'registeredTeams.user',
-            'teams.user'
+            'teams.user',
+            'trophies.team.race'
         );
 
         $competition->setStrategy();
 
-        $histories = $competition->histories()->with('team_1.user', 'team_2.user')->orderBy('created_at')->get();
+        $histories = $competition
+            ->histories()
+            ->with('team_1.user', 'team_2.user')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('competitions.show', compact('competition', 'histories'));
     }

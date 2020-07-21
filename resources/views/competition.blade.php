@@ -6,20 +6,20 @@
     <div class="row">
         <div class="col-md-6 col-sm-12">
             <img src="{{ $competition->logo() }}" alt="logo">
-            <p class="pt-2">
+            <p class="pt-2 mb-1">
                 <b>{{ __('competitions/show_public.commissioner') }}:</b>
                 <a href="/user/{{ $competition->user->id }}">
                     {{ $competition->user->name ?: __('auth.nameless_user') }}
                 </a>
             </p>
-            <p>
+            <p class="mb-1">
                 <b>{{ __('competitions/show_public.type') }}
                     :</b> {{ __('competitions/create.types.' . $competition->type) }}
             </p>
-            <p>
+            <p class="mb-1">
                 <b>{{ __('competitions/show_public.participants') }}:</b> {{ $competition->teams()->count() }}
             </p>
-            <p>
+            <p class="mb-1">
                 <b>{{ __('competitions/show_public.reg_requests') }}:</b> {{ $competition->registeredTeams()->count() }}
             </p>
             <p>
@@ -51,6 +51,14 @@
             </div>
             @if ($competition->finished)
                 <p class="text-danger">{{ __('competitions/show_public.finished') }} {{ $competition->finished }}</p>
+                <h5>{{ __('competitions/show_public.winners') }}</h5>
+                @foreach ($competition->trophies as $trophy)
+                    <p class="mb-0">
+                        {{ $trophy->position }} {{ __('competitions/show_public.place') }}:
+                        <a href="/teams/{{ $trophy->team->id }}">{{ $trophy->team->name }}</a>
+                        ({{ $trophy->team->race->name() }})
+                    </p>
+                @endforeach
             @elseif ($competition->round)
 
             @elseif (today()->toDateString() > $competition->registration_end)

@@ -136,7 +136,12 @@ class Competition extends Model
      */
     public function nextRound()
     {
+        if ($this->finished) {
+            return back()->with('alert', 'This competition is already finished');
+        }
+
         $this->checkStrategy();
+
         $this->strategy->nextRound();
     }
 
@@ -158,6 +163,10 @@ class Competition extends Model
      */
     public function recordResults(array $results)
     {
+        if ($this->round === 0) {
+            return back()->with('alert', 'The competition has not been started yet.');
+        }
+
         $this->checkStrategy();
         $this->strategy->recordResults($results);
     }
@@ -190,6 +199,16 @@ class Competition extends Model
     public function teams()
     {
         return $this->hasMany(Team::class);
+    }
+
+    /**
+     * Get current competition trophies
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function trophies()
+    {
+        return $this->hasMany(Trophy::class);
     }
 
     /**

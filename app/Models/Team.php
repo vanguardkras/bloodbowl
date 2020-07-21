@@ -41,6 +41,15 @@ class Team extends Model
     }
 
     /**
+     * @return int
+     */
+    public function getTotalMatchesOpenLeagueAttribute()
+    {
+        return $this->matchLogLeft()->where('round', 1)->count() +
+            $this->matchLogRight()->where('round', 1)->count();
+    }
+
+    /**
      * Get successfull games percentage
      *
      * @return int
@@ -96,6 +105,26 @@ class Team extends Model
     public function registeredCompetition()
     {
         return $this->belongsToMany(Competition::class, 'registration_competition_team');
+    }
+
+    /**
+     * Match log where the team is team_id_1
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function matchLogLeft()
+    {
+        return $this->hasMany(MatchLog::class, 'team_id_1');
+    }
+
+    /**
+     * Match log where the team is team_id_2
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function matchLogRight()
+    {
+        return $this->hasMany(MatchLog::class, 'team_id_2');
     }
 
     /**

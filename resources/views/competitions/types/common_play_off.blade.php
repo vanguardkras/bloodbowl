@@ -18,8 +18,8 @@
                                         @if($col != $lastRound)
                                         <span class="text-success">{{ $score->touchdowns }}</span>
                                         @endif
-                                        <span><a href="/teams/{{ $score->team->id }}">{{ $score->team->name }}</a> ({{ $score->team->race->name() }})</span>
-                                        <br>
+                                        <span><a href="/teams/{{ $score->team->id }}">{{ $score->team->name }}</a><br>
+                                            ({{ $score->team->race->name() }})</span><br>
                                         <span class="small"><span class="text-info">{{ __('coach.coach') }}:</span> <a
                                                 href="/user/{{ $score->team->user->id }}">{{ $score->team->user->name ?: __('auth.nameless_user') }}</a></span>
                                     @else

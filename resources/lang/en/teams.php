@@ -18,4 +18,15 @@ return [
     'select_logo' => 'Select your team logo',
     'statistics' => 'Statistics',
     'successful_create' => 'The team ":name" has been successfully created',
-    ];
+    'games_total' => 'Games total',
+    'successful_games' => 'Successful games',
+    'draws' => 'Draws',
+    'touchdowns' => 'Touchdowns',
+    'trophies' => 'Trophies',
+    'opponent' => 'Opponent',
+    'score' => 'Score',
+    'competition' => 'Competition',
+    'date' => 'Date',
+    'trophies_header' => 'Trophies',
+    'place' => 'place',
+];

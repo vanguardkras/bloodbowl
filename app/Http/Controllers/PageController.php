@@ -18,9 +18,12 @@ class PageController extends Controller
      */
     public function competition(Competition $competition)
     {
-        $competition->load(['user' => function ($query) {
-            $query->select('id', 'username');
-        }])->loadCount('teams')->load('races');
+        $competition
+            ->load(['user' => function ($query) {
+                $query->select('id', 'username');
+            }])
+            ->loadCount('teams')
+            ->load('races', 'trophies.team.race');
 
         $competition->setStrategy();
 
@@ -29,12 +32,16 @@ class PageController extends Controller
             auth()->user()->approved_team = auth()->user()->approvedTeam($competition->id);
         }
 
-        $histories = $competition->histories()->with('team_1.user', 'team_2.user')->orderBy('created_at')->get();
+        $histories = $competition
+            ->histories()
+            ->with('team_1.user', 'team_2.user')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('competition', compact([
             'competition',
             'histories'
-            ]));
+        ]));
     }
 
     /**

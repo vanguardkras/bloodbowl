@@ -16,32 +16,43 @@
         <div class="col-md-6">
             <h2>{{ __('teams.statistics') }}</h2>
             <div>
-                <strong>Количество игр:</strong> {{ $team->played }}
+                <strong>{{ __('teams.games_total') }}:</strong> {{ $team->played }}
             </div>
             <div>
-                <strong>Успешных игр:</strong> {{ $team->successful_games_percentage }}%
+                <strong>{{ __('teams.successful_games') }}:</strong> {{ $team->successful_games_percentage }}%
             </div>
             <div>
-                <strong>Количество ничьих:</strong> {{ $team->draws }}
+                <strong>{{ __('teams.draws') }}:</strong> {{ $team->draws }}
             </div>
             <div>
-                <strong>Количество тачдаунов:</strong> {{ $team->touchdowns }}
+                <strong>{{ __('teams.touchdowns') }}:</strong> {{ $team->touchdowns }}
             </div>
             <div>
-                <strong>Количество трофеев:</strong> {{ $team->trophies()->count() }}
+                <strong>{{ __('teams.trophies') }}:</strong> {{ $team->trophies()->count() }}
             </div>
             <hr>
+            @if ($team->trophies->isNotEmpty())
+                <h5>{{ __('teams.trophies_header') }}</h5>
+                @foreach ($team->trophies as $trophy)
+                    <p class="mb-0">
+                        {{ $trophy->position }} {{ __('teams.place') }}:
+                        <a href="/competitions/{{ $trophy->competition->id }}/show">
+                            {{ $trophy->competition->name }}
+                        </a>
+                    </p>
+                @endforeach
+            @endif
         </div>
     </div>
-    <h3>История игр</h3>
+    <h3>{{ __('teams.history') }}</h3>
     <table class="table mx-auto table-sm" id="statistics">
         <thead>
         <tr>
             <th scope="col">#</th>
-            <th scope="col">Противник</th>
-            <th scope="col">Счет</th>
-            <th scope="col">Соревнование</th>
-            <th scope="col" class="d-none d-md-table-cell">Дата</th>
+            <th scope="col">{{ __('teams.opponent') }}</th>
+            <th scope="col">{{ __('teams.score') }}</th>
+            <th scope="col">{{ __('teams.competition') }}</th>
+            <th scope="col" class="d-none d-md-table-cell">{{ __('teams.date') }}</th>
         </tr>
         </thead>
         <tbody>

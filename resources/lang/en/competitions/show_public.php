@@ -22,4 +22,6 @@ return [
     'can_change' => 'But you can change it until your choice is not approved by the commissioner',
     'select_team' => 'Select a team to apply for the competition',
     'apply' => 'Apply',
+    'winners' => 'Winners',
+    'place' => 'place',
 ];

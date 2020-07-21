@@ -3,8 +3,6 @@
 
 namespace App\Services\CompetitionStrategy;
 
-
-use App\Models\MatchLog;
 use App\Models\Score;
 use App\Models\Trophy;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +32,11 @@ class GroupRounds extends Type
         $this->competition->parameters = $parameters;
     }
 
+    /**
+     * Get teams list for the group stage participants
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function getGroupStageTeams()
     {
         $max_round = $this->competition->parameters->groups_size - 1;
@@ -50,10 +53,6 @@ class GroupRounds extends Type
      */
     public function nextRound()
     {
-        if ($this->competition->finished) {
-            return back()->with('alert', 'This competition is already finished');
-        }
-
         if (!$this->competition->round) {
             $this->firstRoundDistribution();
             $this->competition->round++;
@@ -117,10 +116,8 @@ class GroupRounds extends Type
 
     /**
      * Create trophies for a finished competition.
-     *
-     * @param bool $tops_number
      */
-    public function createTrophies($tops_number = false)
+    public function createTrophies()
     {
         $po_teams = $this->competition->parameters->group_rounds_play_off;
 
@@ -232,47 +229,13 @@ class GroupRounds extends Type
 
         } elseif ($this->competition->parameters->group_rounds_play_off) {
 
-            if ($results['touchdowns_1'] === $results['touchdowns_2']) {
-                return back()->with('alert', 'In Play off results cannot be equal');
-            }
-
-            $scores = $this->competition->scores()
-                ->where('round', $this->competition->round)
-                ->where(function ($query) use ($results) {
-                    $query->where('team_id', $results['team_1'])
-                        ->orWhere('team_id', $results['team_2']);
-                })
-                ->get();
-
-            if ($scores->count() !== 2) {
-                return back()->with('alert', 'Wrong teams have been selected');
-            }
-
-            if ($scores[0]->touchdowns !== 0 || $scores[1]->touchdowns !== 0) {
-                return back()->with('alert', 'You have already stored these results');
-            }
-
-            // Check that the teams play against each other and it is the first time results are registered
-            if (($scores[0]->order % 2 === 0 && $scores[1]->order === $scores[0]->order + 1) ||
-                ($scores[1]->order % 2 === 0 && $scores[0]->order === $scores[1]->order + 1)
-            ) {
-                $scores = $scores->keyBy('team_id');
-                foreach ($this->formatResults($results) as $key => $result) {
-                    $scores[$key]->touchdowns += $result['touchdowns'];
-                    $scores[$key]->touchdowns_diff += $result['touchdowns_diff'];
-                    $scores[$key]->score += $result['points'];
-                    $scores[$key]->save();
-                }
-                $this->createMatchLogAndHistory($results);
-            } else {
-                return back()->with('alert', 'Selected teams cannot play against each other in Play Off');
-            }
+            $this->recordPlayOffResults($results);
 
         } else {
             return back()->with('alert', 'Current tournament does not have Play Off');
         }
 
-        back()->with('success', 'The results have been successfully saved.');
+        return back()->with('success', 'The results have been successfully saved.');
     }
 
     /**

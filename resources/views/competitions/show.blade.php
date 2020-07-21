@@ -6,6 +6,14 @@
     </h1>
     @if ($competition->finished)
         <h3 class="text-primary mb-3">{{ __('competitions/show_public.finished') }} {{ $competition->finished }}</h3>
+        <h5>{{ __('competitions/show_public.winners') }}</h5>
+        @foreach ($competition->trophies as $trophy)
+            <p class="mb-1">
+                {{ $trophy->position }} {{ __('competitions/show_public.place') }}:
+                <a href="/teams/{{ $trophy->team->id }}">{{ $trophy->team->name }}</a>
+                ({{ $trophy->team->race->name() }})
+            </p>
+        @endforeach
     @else
         <div class="mb-3">
             <form action="/competitions/{{ $competition->id }}/next_round" method="post">

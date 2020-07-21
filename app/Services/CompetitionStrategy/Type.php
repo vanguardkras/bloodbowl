@@ -84,6 +84,7 @@ abstract class Type
      */
     protected function finish()
     {
+
         if ($this->competition->round < $this->maxRound() || $this->competition->finished) {
             return back()->with('alert', 'You cannot finish the competition so far.');
         }
@@ -92,6 +93,8 @@ abstract class Type
         $this->competition->save();
 
         $this->createTrophies();
+        $this->competition->teams()->update(['competition_id' => null]);
+        //$this->competition->matchLogs()->delete();
     }
 
     /**
@@ -271,6 +274,51 @@ abstract class Type
     }
 
     /**
+     * If you record play off results, use this function for standard checks.
+     *
+     * @param array $results
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function recordPlayOffResults(array $results)
+    {
+        if ($results['touchdowns_1'] === $results['touchdowns_2']) {
+            return back()->with('alert', 'In Play off results cannot be equal');
+        }
+
+        $scores = $this->competition->scores()
+            ->where('round', $this->competition->round)
+            ->where(function ($query) use ($results) {
+                $query->where('team_id', $results['team_1'])
+                    ->orWhere('team_id', $results['team_2']);
+            })
+            ->get();
+
+        if ($scores->count() !== 2) {
+            return back()->with('alert', 'Wrong teams have been selected');
+        }
+
+        if ($scores[0]->touchdowns !== 0 || $scores[1]->touchdowns !== 0) {
+            return back()->with('alert', 'You have already stored these results');
+        }
+
+        // Check that the teams play against each other and it is the first time results are registered
+        if (($scores[0]->order % 2 === 0 && $scores[1]->order === $scores[0]->order + 1) ||
+            ($scores[1]->order % 2 === 0 && $scores[0]->order === $scores[1]->order + 1)
+        ) {
+            $scores = $scores->keyBy('team_id');
+            foreach ($this->formatResults($results) as $key => $result) {
+                $scores[$key]->touchdowns += $result['touchdowns'];
+                $scores[$key]->touchdowns_diff += $result['touchdowns_diff'];
+                $scores[$key]->score += $result['points'];
+                $scores[$key]->save();
+            }
+            $this->createMatchLogAndHistory($results);
+        } else {
+            return back()->with('alert', 'Selected teams cannot play against each other in Play Off');
+        }
+    }
+
+    /**
      * Get current competition first round of play off
      *
      * @return mixed
@@ -301,9 +349,6 @@ abstract class Type
 
     /**
      * Create trophies for a finished competition.
-     *
-     * @param bool $tops_number
-     * @return mixed
      */
-    protected abstract function createTrophies($tops_number = false);
+    protected abstract function createTrophies();
 }
