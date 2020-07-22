@@ -110,10 +110,11 @@ class CompetitionPolicy
             return true;
         }
 
-        $team = Team::find(request()->team_1);
+        $team_1 = Team::find(request()->team_1);
+        $team_2 = Team::find(request()->team_2);
 
-        if ($team->competition_id === $competition->id &&
-            $team->user_id === $user->id &&
+        if (($team_1->competition_id === $competition->id && $team_2->competition_id === $competition->id) &&
+            ($team_1->user_id === $user->id || $team_2->user_id === $user->id) &&
             $competition->self_confirm
         ) {
             return true;

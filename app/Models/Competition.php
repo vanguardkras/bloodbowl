@@ -137,10 +137,19 @@ class Competition extends Model
     public function nextRound()
     {
         if ($this->finished) {
-            return back()->with('alert', 'This competition is already finished');
+            return back()->with('alert', __('competitions/management.already_finished_error'));
+        }
+
+        if ($this->teams()->count() < 2) {
+            return back()->with('alert', __('competitions/management.teams_number_error'));
         }
 
         $this->checkStrategy();
+
+        if (!$this->strategy->checkRequiredCurrentRoundMatches() && $this->round) {
+            return back()->with('alert', __('competitions/management.next_round_error'));
+        }
+
 
         $this->strategy->nextRound();
     }
@@ -159,12 +168,13 @@ class Competition extends Model
      * Add new match results to the current competition.
      *
      * @param array $results
+     * @return \Illuminate\Http\RedirectResponse
      * @throws \ReflectionException
      */
     public function recordResults(array $results)
     {
         if ($this->round === 0) {
-            return back()->with('alert', 'The competition has not been started yet.');
+            return back()->with('alert', __('competitions/management.no_start_error'));
         }
 
         $this->checkStrategy();

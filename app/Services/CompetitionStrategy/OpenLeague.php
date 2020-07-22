@@ -54,7 +54,7 @@ class OpenLeague extends Type
      */
     public function getScores()
     {
-       return $this->competition->scores()
+        return $this->competition->scores()
             ->where('round', '=', 1)
             ->orderBy('order')
             ->with('team.user')
@@ -69,13 +69,9 @@ class OpenLeague extends Type
     public function nextRound()
     {
         if ($this->competition->round >= $this->maxRound()) { // Last round
-            if ($this->checkRequiredCurrentRoundMatches()) {
-                $this->makePlayOffOrder();
-                $this->finish();
-                session()->flash('success', __('competitions/management.finish_success'));
-            } else {
-                session()->flash('alert', __('competitions/management.finish_error'));
-            }
+            $this->makePlayOffOrder();
+            $this->finish();
+            session()->flash('success', __('competitions/management.finish_success'));
 
         } elseif ($this->competition->round === 0) { // First round
             foreach ($this->competition->teams as $team) {
@@ -117,7 +113,7 @@ class OpenLeague extends Type
      *
      * @return bool
      */
-    protected function checkRequiredCurrentRoundMatches(): bool
+    public function checkRequiredCurrentRoundMatches(): bool
     {
         if ($this->competition->round > 1) {
             $teams_in_round = $this->competition
@@ -159,7 +155,7 @@ class OpenLeague extends Type
                         (($team_2_last_log->team_id_1 == $results['team_1'] && $team_2_last_log->team_id_2 == $results['team_2']) ||
                             ($team_2_last_log->team_id_1 == $results['team_2'] && $team_2_last_log->team_id_2 == $results['team_1']))
                     ) {
-                        return back()->with('alert', 'One of the teams last match was against the same team');
+                        return back()->with('alert', __('competitions/management.league_same_team_last_error'));
                     }
                 }
             }
@@ -180,7 +176,7 @@ class OpenLeague extends Type
                     $team_1_games >= $this->competition->parameters->max_games ||
                     $team_2_games >= $this->competition->parameters->max_games
                 ) {
-                    return back()->with('alert', 'One of the teams has reached their maximum games number');
+                    return back()->with('alert', __('competitions/management.max_games_error'));
                 }
             }
 
@@ -201,7 +197,7 @@ class OpenLeague extends Type
                     ->count();
 
                 if ($games >= $this->competition->parameters->max_one_team_games) {
-                    return back()->with('alert', 'These teams have already reached their maximum number of games against each other');
+                    return back()->with('alert', __('competitions/management.max_games_against_error'));
                 }
             }
 
@@ -223,7 +219,7 @@ class OpenLeague extends Type
 
             $this->createMatchLogAndHistory($results, 1);
 
-            return back()->with('success', 'The results have been successfully saved.');
+            return back()->with('success', __('competitions/management.save_success'));
 
         } elseif ($this->competition->round <= $this->competition->getMaxRound()) {
             $this->recordPlayOffResults($results);
@@ -275,7 +271,7 @@ class OpenLeague extends Type
     }
 
     /**
-     * Get current competition number of play off rounds.
+     * Get current competition number of play off players.
      *
      * @return mixed|void
      */

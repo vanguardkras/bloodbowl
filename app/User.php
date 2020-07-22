@@ -13,6 +13,7 @@ use Illuminate\Notifications\Notifiable;
 /**
  * Class User
  *
+ * @property int $id
  * @property string $username
  * @property string $email
  * @property string $email_verified_at
@@ -96,7 +97,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function teams()
     {
-        return $this->hasMany(Team::class);
+        return $this->hasMany(Team::class)->where('name', '!=', 'BOT');
     }
 
     /**

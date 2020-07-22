@@ -55,6 +55,7 @@ abstract class Type
             ->with('team.user')
             ->with('team.race')
             ->get();
+
         return view('competitions.types.common_play_off',
             compact(['playOffRounds', 'lastRound', 'startRound', 'scores']));
     }
@@ -86,15 +87,15 @@ abstract class Type
     {
 
         if ($this->competition->round < $this->maxRound() || $this->competition->finished) {
-            return back()->with('alert', 'You cannot finish the competition so far.');
+            return back()->with('alert', __('competitions/management.finish_error_general'));
         }
 
         $this->competition->finished = today()->toDateString();
         $this->competition->save();
 
         $this->createTrophies();
+        $this->competition->matchLogs()->delete();
         $this->competition->teams()->update(['competition_id' => null]);
-        //$this->competition->matchLogs()->delete();
     }
 
     /**
@@ -224,6 +225,7 @@ abstract class Type
 
     /**
      * Create trophies for a finished competition.
+     *
      * @param bool $tops_number
      * @return \Illuminate\Database\Eloquent\Collection
      */
@@ -282,7 +284,7 @@ abstract class Type
     public function recordPlayOffResults(array $results)
     {
         if ($results['touchdowns_1'] === $results['touchdowns_2']) {
-            return back()->with('alert', 'In Play off results cannot be equal');
+            return back()->with('alert', __('competitions/management.po_equal_results_error'));
         }
 
         $scores = $this->competition->scores()
@@ -294,11 +296,11 @@ abstract class Type
             ->get();
 
         if ($scores->count() !== 2) {
-            return back()->with('alert', 'Wrong teams have been selected');
+            return back()->with('alert', __('competitions/management.results_teams_error'));
         }
 
         if ($scores[0]->touchdowns !== 0 || $scores[1]->touchdowns !== 0) {
-            return back()->with('alert', 'You have already stored these results');
+            return back()->with('alert', __('competitions/management.results_repeat_error'));
         }
 
         // Check that the teams play against each other and it is the first time results are registered
@@ -314,8 +316,10 @@ abstract class Type
             }
             $this->createMatchLogAndHistory($results);
         } else {
-            return back()->with('alert', 'Selected teams cannot play against each other in Play Off');
+            return back()->with('alert', __('competitions/management.results_wrong_teams'));
         }
+
+        return back()->with('success', __('competitions/management.save_success'));
     }
 
     /**
@@ -326,7 +330,7 @@ abstract class Type
     protected abstract function getPlayOffStartRound();
 
     /**
-     * Get current competition number of play off rounds.
+     * Get current competition number of play off players.
      *
      * @return mixed
      */
@@ -345,7 +349,7 @@ abstract class Type
      *
      * @return bool
      */
-    protected abstract function checkRequiredCurrentRoundMatches(): bool;
+    public abstract function checkRequiredCurrentRoundMatches(): bool;
 
     /**
      * Create trophies for a finished competition.

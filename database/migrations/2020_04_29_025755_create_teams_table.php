@@ -18,7 +18,7 @@ class CreateTeamsTable extends Migration
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('name')->unique();
+            $table->string('name');
             $table->foreignId('race_id')->constrained()->cascadeOnDelete();
             $table->string('logo')->nullable();
             $table->unsignedBigInteger('competition_id')->nullable();

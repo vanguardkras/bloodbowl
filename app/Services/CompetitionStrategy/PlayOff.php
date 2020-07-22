@@ -4,6 +4,9 @@
 namespace App\Services\CompetitionStrategy;
 
 
+use App\Models\Score;
+use App\Models\Team;
+
 class PlayOff extends Type
 {
     /**
@@ -20,8 +23,58 @@ class PlayOff extends Type
      */
     public function nextRound()
     {
-        // Find max round
-        // If not max create automatically using makePlayOffOrder()
+        if ($this->competition->round) {
+
+            $this->makePlayOffOrder();
+
+            if ($this->competition->round == $this->maxRound()) {
+                $this->finish();
+                session()->flash('success', __('competitions/management.finish_success'));
+            } else {
+                $this->competition->round++;
+                $this->competition->save();
+                session()->flash('success', __('competitions/management.next_success'));
+            }
+
+        } else {
+            $this->firstRoundDistribution();
+            $this->competition->round++;
+            $this->competition->save();
+            session()->flash('success', __('competitions/management.start') . ' ' . $this->competition->name);
+        }
+    }
+
+    /**
+     * Get current competition number of play off players.
+     *
+     * @return mixed
+     */
+    protected function getPlayOffTeamsNumber()
+    {
+        return pow(2, $this->maxRound());
+    }
+
+    /**
+     * Get the max round for the competition.
+     *
+     * @return int
+     */
+    public function maxRound(): int
+    {
+        $teams = $this->competition->scores()->where('round', 1)->count();
+        return intval(ceil(log10($teams) / log10(2)));
+    }
+
+    /**
+     * Record new match results for the competition.
+     *
+     * @param array $results
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    public function recordResults(array $results)
+    {
+        $this->recordPlayOffResults($results);
     }
 
     /**
@@ -30,7 +83,7 @@ class PlayOff extends Type
      *
      * @return bool
      */
-    protected function checkRequiredCurrentRoundMatches(): bool
+    public function checkRequiredCurrentRoundMatches(): bool
     {
         $teams_in_round = $this->competition
             ->scores()
@@ -47,21 +100,48 @@ class PlayOff extends Type
      */
     protected function createTrophies($tops_number = false)
     {
-        // TODO: Implement createTrophies() method.
+        $this->createPlayOffTrophies();
     }
 
     /**
-     * Get the max round for the competition.
+     * Get current competition first round of play off
      *
-     * @return int
+     * @return mixed
      */
-    public function maxRound(): int
+    protected function getPlayOffStartRound()
     {
-        $this->competition->loadCount('teams');
-        for ($i = $this->competition->teams_count; $i <= 65536; $i++) {
-            if (($i & ($i - 1)) === 0) {
-                return log10($i) / log10(2);
-            }
+        return 1;
+    }
+
+    /**
+     * Initial random registered players distribution and adding a necessary number of bots.
+     */
+    private function firstRoundDistribution()
+    {
+        $participants = $this->competition->teams()->pluck('id')->shuffle();
+        $max_round = intval(ceil(log10($participants->count()) / log10(2)));
+        $total = pow(2, $max_round);
+        $bots_number = $total - $participants->count();
+
+        for ($i = 0; $i < $bots_number; $i++) {
+            $races = races();
+            $bot = new Team();
+            $bot->user_id = 1;
+            $bot->name = 'BOT';
+            $bot->race_id = $races[rand(0, count($races) - 1)]->id;
+            $bot->competition_id = $this->competition->id;
+            $bot->save();
+            $participants->push($bot->id);
+        }
+
+        foreach ($participants as $order => $team_id) {
+            $score = new Score();
+            $score->competition_id = $this->competition->id;
+            $score->round = 1;
+            $score->team_id = $team_id;
+            $score->order = $order;
+            $score->save();
         }
     }
+
 }

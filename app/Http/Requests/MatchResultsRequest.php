@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Competition;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MatchResultsRequest extends FormRequest

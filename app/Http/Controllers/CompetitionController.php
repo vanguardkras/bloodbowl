@@ -149,6 +149,7 @@ class CompetitionController extends Controller
         }
 
         $name = $competition->name;
+        $competition->teams()->update(['competition_id' => null]);
         $competition->delete();
         return redirect('/competitions')->with('success', __(
             'competitions/list.delete_success',

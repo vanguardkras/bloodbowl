@@ -31,6 +31,7 @@ class CreateUsersTable extends Migration
 
         $super = new User;
         $super->username = env('SUPER_USERNAME');
+        $super->name = 'Superadmin';
         $super->email = env('SUPER_EMAIL');
         $super->email_verified_at = time();
         $super->password = Hash::make(env('SUPER_PASSWORD'));
