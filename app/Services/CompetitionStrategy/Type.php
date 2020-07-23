@@ -180,8 +180,8 @@ abstract class Type
         // Update teams statistics
         $team_1->touchdowns += $results['touchdowns_1'];
         $team_2->touchdowns += $results['touchdowns_2'];
-        $team_1->played++;
-        $team_2->played++;
+        $team_1->played = $team_1->played + 1;
+        $team_2->played = $team_2->played + 1;
         $team_1->wins += $results['touchdowns_1'] > $results['touchdowns_2'] ? 1 : 0;
         $team_2->wins += $results['touchdowns_2'] > $results['touchdowns_1'] ? 1 : 0;
         $team_1->draws += $results['touchdowns_1'] === $results['touchdowns_2'] ? 1 : 0;
