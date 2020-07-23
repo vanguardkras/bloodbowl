@@ -34,4 +34,7 @@ return [
     'already_finished_error' => 'This competition is already finished',
     'teams_number_error' => 'Not enough participants to start the competition',
     'next_round_error' => 'You cannot start the next round because not all the matches have been finished',
+    'not_confirmed_error' => 'You cannot start the next round because you have unconfirmed games',
+    'results_deleted' => 'Match results have been successfully canceled',
+    'results_confirmed' => 'Match results have been successfully confirmed',
 ];

@@ -99,6 +99,19 @@ class Competition extends Model
     }
 
     /**
+     * Get list of available teams
+     *
+     * @param Team $team
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    public function getPossibleOpponents(Team $team)
+    {
+        $this->setStrategy();
+        return $this->strategy->getPossibleOpponents($team);
+    }
+
+    /**
      * Get current competition history.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -142,6 +155,10 @@ class Competition extends Model
 
         if ($this->teams()->count() < 2) {
             return back()->with('alert', __('competitions/management.teams_number_error'));
+        }
+
+        if ($this->matchLogs()->where('confirmed', false)->count()) {
+            return back()->with('alert', __('competitions/management.not_confirmed_error'));
         }
 
         $this->checkStrategy();

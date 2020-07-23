@@ -170,9 +170,11 @@ abstract class Type
         $mathLog->score_1 = $results['touchdowns_1'];
         $mathLog->score_2 = $results['touchdowns_2'];
         $mathLog->round = $round ?: $this->competition->round;
-        $mathLog->confirmed = $this->competition->self_confirm >= 2;
         $mathLog->date = today()->toDateString();
         $mathLog->history_id = $history->id;
+        $mathLog->user_id = auth()->user()->id;
+        $mathLog->confirmed = $this->competition->self_confirm >= 2;
+            //|| auth()->user()->id === $this->competition->user_id;
         $mathLog->save();
 
         // Update teams statistics
@@ -323,6 +325,30 @@ abstract class Type
     }
 
     /**
+     * Get the opponent for the play off stage
+     *
+     * @param $team_id
+     * @return array|\Illuminate\Support\Collection
+     */
+    protected function getPlayOffOpponent($team_id)
+    {
+        $team_score = $this->competition->scores()
+            ->where('team_id', $team_id)
+            ->where('round', $this->competition->round)
+            ->first(['round', 'order']);
+
+        if (!$team_score) {
+            return [];
+        }
+
+        $step = $team_score->order % 2 ? -1 : 1;
+        return $this->competition->scores()
+            ->where('round', $this->competition->round)
+            ->where('order', $team_score->order + $step)
+            ->first()['team_id'];
+    }
+
+    /**
      * Get current competition first round of play off
      *
      * @return mixed
@@ -335,6 +361,14 @@ abstract class Type
      * @return mixed
      */
     protected abstract function getPlayOffTeamsNumber();
+
+    /**
+     * Get list of possible opponents for the team.
+     *
+     * @param Team $team
+     * @return mixed
+     */
+    public abstract function getPossibleOpponents(Team $team);
 
     /**
      * Get the max round for the competition.

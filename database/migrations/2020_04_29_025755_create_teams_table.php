@@ -28,12 +28,6 @@ class CreateTeamsTable extends Migration
             $table->unsignedInteger('draws')->default(0);
             $table->timestamps();
         });
-
-        $bot = new Team;
-        $bot->user_id = 1;
-        $bot->name = 'BOT';
-        $bot->race_id = 13;
-        $bot->save();
     }
 
     /**

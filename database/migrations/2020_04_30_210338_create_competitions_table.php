@@ -41,10 +41,10 @@ class CreateCompetitionsTable extends Migration
      */
     public function down()
     {
-        $teams = Competition::all('logo');
-        foreach ($teams as $team) {
-            if ($team->logo) {
-                Storage::disk('public')->delete($team->logo);
+        $competitions = Competition::all('logo');
+        foreach ($competitions as $competition) {
+            if ($competition->logo) {
+                Storage::disk('public')->delete($competition->logo);
             }
         }
         Schema::dropIfExists('competitions');

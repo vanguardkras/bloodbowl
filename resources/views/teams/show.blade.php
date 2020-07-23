@@ -11,6 +11,10 @@
                 {{ __('teams.race_attribute') }}:
                 <span class="text-primary">{{ $team->race->name }}</span>
             </h3>
+            <h5>
+                {{ __('coach.coach') }}:
+                <a href="/user/{{ $team->user->id }}">{{ $team->user->name ?? __('auth.nameless_user') }}</a>
+            </h5>
             <hr>
         </div>
         <div class="col-md-6">

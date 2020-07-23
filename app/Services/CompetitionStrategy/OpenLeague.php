@@ -4,6 +4,7 @@
 namespace App\Services\CompetitionStrategy;
 
 use App\Models\Score;
+use App\Models\Team;
 use App\Models\Trophy;
 
 class OpenLeague extends Type
@@ -48,6 +49,102 @@ class OpenLeague extends Type
     }
 
     /**
+     * Get list of possible opponents for the team.
+     *
+     * @param Team $team
+     * @return mixed
+     */
+    public function getPossibleOpponents(Team $team)
+    {
+        if ($this->competition->round === 1) {
+            // Open league games stage
+
+            // Check if already has max games
+            if ($this->competition->parameters->max_games) {
+                $number_of_games = $this->competition->matchLogs()
+                    ->where('team_id_1', $team->id)
+                    ->orWhere('team_id_2', $team->id)
+                    ->count();
+                if ($number_of_games >= $this->competition->parameters->max_games) {
+                    return [];
+                }
+            }
+
+            $results = $this->competition->scores()
+                ->where('team_id', '!=', $team->id)
+                ->where('round', 1)
+                ->get()->pluck('team_id')->toArray();
+
+            $exclude = [];
+
+            // Check if the last game was against the same team
+            if (!$this->competition->parameters->one_team_row) {
+                $last_game = $this->competition->matchLogs()
+                    ->where('round', 1)
+                    ->where(function ($query) use ($team) {
+                        $query->where('team_id_1', $team->id)
+                            ->orWHere('team_id_2', $team->id);
+                    })->latest()->first();
+
+                if ($last_game) {
+                    $exclude[] = $last_game->team_id_1 === $team->id ?
+                        $last_game->team_id_2 :
+                        $last_game->team_id_1;
+                }
+
+                foreach ($results as $result) {
+                    $last_game_other = $this->competition->matchLogs()
+                        ->where('round', 1)
+                        ->where(function ($query) use ($result) {
+                            $query->where('team_id_1', $result)
+                                ->orWHere('team_id_2', $result);
+                        })->latest()->first();
+
+                    if ($last_game_other) {
+                        $other_opponent = $last_game_other->team_id_1 === $result ?
+                            $last_game_other->team_id_2 :
+                            $last_game_other->team_id_1;
+
+                        if ($other_opponent === $team->id) {
+                            $exclude[] = $result;
+                        }
+                    }
+                }
+            }
+
+            // Check if the maximum games against the same team is reached
+            if ($this->competition->parameters->max_one_team_games) {
+                foreach ($results as $result) {
+                    $games_number = $this->competition->matchLogs()
+                        ->where('round', 1)
+                        ->where(function ($query) use ($team, $result) {
+                            $query->where(function ($query) use ($team, $result) {
+                                $query->where('team_id_1', $team->id)
+                                    ->where('team_id_2', $result);
+                            })->orWhere(function ($query) use ($team, $result) {
+                                $query->where('team_id_2', $team->id)
+                                    ->where('team_id_1', $result);
+                            });
+                        })->count();
+
+                    if ($games_number >= $this->competition->parameters->max_one_team_games) {
+                        $exclude[] = $result;
+                    }
+                }
+            }
+
+            $results = array_values(array_diff($results, $exclude));
+            return $results;
+
+        } elseif ($this->competition->round > 1) {
+            // In case of PO
+            return [$this->getPlayOffOpponent($team->id)];
+        }
+
+        return [];
+    }
+
+    /**
      * Get scores data for informational pages
      *
      * @return \Illuminate\Database\Eloquent\Collection
@@ -59,8 +156,6 @@ class OpenLeague extends Type
             ->orderBy('order')
             ->with('team.user')
             ->get();
-
-        dd($temp);
     }
 
     /**
@@ -90,6 +185,11 @@ class OpenLeague extends Type
             $this->competition->round++;
             $this->competition->save();
             session()->flash('success', __('competitions/management.next_success'));
+        } else {
+            $this->makePlayOffOrder();
+            $this->competition->round++;
+            $this->competition->save();
+            session()->flash('success', __('competitions/management.next_success'));
         }
     }
 
@@ -104,6 +204,7 @@ class OpenLeague extends Type
         if ($this->competition->parameters->open_league_play_off) {
             $max += log10($this->competition->parameters->open_league_play_off) / log10(2);
         }
+
         return $max;
     }
 

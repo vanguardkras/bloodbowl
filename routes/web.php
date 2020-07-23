@@ -35,10 +35,17 @@ Route::middleware('auth')->group(function () {
     Route::patch('become_commissioner', 'UserController@becomeCommissioner');
     Route::post('competitions/{competition}/register_team', 'PageController@registerTeam');
     Route::post('results/{competition}', 'PageController@recordResults');
-});
+    Route::post('results/{match_log}/confirm', 'PageController@confirmResults');
+    Route::post('results/{match_log}/reject', 'PageController@rejectResults');
 
-// Teams management routes
-Route::resource('teams', 'TeamController')->except('edit');
+    // Teams management routes
+    Route::resource('teams', 'TeamController')->except('edit');
+
+    // Ajax Add Results
+    Route::get('is_commissioner/{competition}', 'AddResultsAjaxController@isCommissioner');
+    Route::get('get_team/{competition}', 'AddResultsAjaxController@getTeam');
+    Route::get('get_possible_opponents/{competition}/{team}', 'AddResultsAjaxController@getPossibleOpponents');
+});
 
 //Competitons routes
 Route::middleware('commissioner')->group(function () {

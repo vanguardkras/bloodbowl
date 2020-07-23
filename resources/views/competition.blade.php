@@ -108,7 +108,10 @@
     </div>
 
     {{-- Section of the started competition --}}
-
+    @include('helpers.confirm_results')
+    @if ($isParticipant)
+        @include('helpers.add_results')
+    @endif
     {{-- Competition information section --}}
     @if ($competition->round)
         @include('competitions.types.' . $competition->type . '_data')

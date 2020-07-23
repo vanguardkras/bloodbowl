@@ -23,6 +23,7 @@ class CreateMatchLogsTable extends Migration
             $table->unsignedTinyInteger('score_2');
             $table->date('date');
             $table->foreignId('history_id')->constrained();
+            $table->unsignedBigInteger('user_id');
             $table->boolean('confirmed');
             $table->timestamps();
         });

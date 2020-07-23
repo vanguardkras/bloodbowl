@@ -7,4 +7,9 @@ return [
     'yes' => 'Yes',
     'no' => 'No',
     'submit' => 'Submit',
+    'team' => 'Team',
+    'confirm' => 'Confirm',
+    'reject' => 'Reject',
+    'score' => 'Score',
+    'actions' => 'Actions',
 ];

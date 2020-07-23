@@ -31,5 +31,7 @@
     @include('helpers.message', ['name' => 'success', 'importance' => 'success'])
     @yield('content')
 </main>
+    @include('layouts.footer')
+    @yield('processors', '')
 </body>
 </html>

@@ -86,7 +86,7 @@ class TeamController extends Controller
     public function show(Team $team)
     {
         $history = $team->history();
-        $team->load('trophies.competition');
+        $team->load('trophies.competition', 'user');
 
         return view('teams.show', compact('team', 'history'));
     }

@@ -2,7 +2,6 @@
 
 @section('content')
     <h1 class="text-primary">{{ $user->name ?: __('auth.nameless_user') }}</h1>
-    <button class="btn btn-info disabled">{{ __('coach.send_message') }} (in development)</button>
     @if ($user->vk_id)
         <h6 class="text-info">VK: <a class="text-info" target="_blank"
                                      href="https://vk.com/id{{ $user->vk_id }}">id{{ $user->vk_id }}</a></h6>

@@ -50,6 +50,61 @@ class GroupRounds extends Type
     }
 
     /**
+     * Get list of possible opponents for the team.
+     *
+     * @param Team $team
+     * @return mixed
+     */
+    public function getPossibleOpponents(Team $team)
+    {
+        $groups_size = $this->competition->parameters->groups_size;
+
+        if ($this->competition->round < $groups_size) {
+            //In case of group stage
+
+            $team_score = $this->competition->scores()
+                ->where('team_id', $team->id)->first(['round', 'order']);
+
+            $group_number = floor($team_score->order / $groups_size);
+            $order_start = $group_number * $groups_size;
+            $order_end = $order_start + $groups_size - 1;
+            $teams = $this->competition->scores()
+                ->where('round', $team_score->round)
+                ->where('team_id', '!=', $team->id)
+                ->where('order', '>=', $order_start)
+                ->where('order', '<=', $order_end)
+                ->get();
+            $results = $teams->pluck('team_id');
+            $results_number = $results->count();
+
+            for ($i = 0; $i < $results_number; $i++) {
+
+                $played = $this->competition->matchLogs()
+                    ->where('round', '>=', 1)
+                    ->where('round', '<', $groups_size)
+                    ->where(function ($query) use ($team, $results, $i) {
+                        $query->where(function ($query) use ($team, $results, $i) {
+                            $query->where('team_id_1', $team->id)
+                                ->where('team_id_2', $results[$i]);
+                        })->orWhere(function ($query) use ($team, $results, $i) {
+                            $query->where('team_id_2', $team->id)
+                                ->where('team_id_1', $results[$i]);
+                        });
+                    })->get();
+                if ($played->isNotEmpty()) {
+                    unset($results[$i]);
+                }
+            }
+
+            return array_values($results->toArray());
+
+        } else {
+            // In case of PO
+            return [$this->getPlayOffOpponent($team->id)];
+        }
+    }
+
+    /**
      * Start the next competition round.
      */
     public function nextRound()
@@ -122,10 +177,11 @@ class GroupRounds extends Type
 
 
             if ($is_bot) {
+                $races = races();
                 $bot = new Team();
                 $bot->user_id = 1;
                 $bot->name = 'BOT';
-                $bot->race_id = 13;
+                $bot->race_id = $races[rand(0, count($races) - 1)]->id;
                 $bot->competition_id = $this->competition->id;
                 $bot->save();
                 $score->team_id = $bot->id;

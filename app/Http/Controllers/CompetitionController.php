@@ -7,7 +7,7 @@ use App\Models\Competition;
 use App\Models\Team;
 use App\Services\ImageUploader;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class CompetitionController extends Controller
 {
@@ -90,7 +90,10 @@ class CompetitionController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('competitions.show', compact('competition', 'histories'));
+        $unconfirmed = $competition->matchLogs()->where('confirmed', false)
+            ->with(['teamLeft.user', 'teamRight.user'])->get();
+
+        return view('competitions.show', compact('competition', 'histories', 'unconfirmed'));
     }
 
     /**
@@ -150,6 +153,11 @@ class CompetitionController extends Controller
 
         $name = $competition->name;
         $competition->teams()->update(['competition_id' => null]);
+
+        if ($competition->logo) {
+            Storage::disk('public')->delete($competition->logo);
+        }
+
         $competition->delete();
         return redirect('/competitions')->with('success', __(
             'competitions/list.delete_success',

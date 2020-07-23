@@ -15,4 +15,5 @@ mix
     .js('resources/js/app.js', 'public/js')
     .js('resources/js/datatable.js', 'public/js')
     .js('resources/js/competition_create.js', 'public/js')
-    .js('resources/js/teams_list.js', 'public/js');
+    .js('resources/js/teams_list.js', 'public/js')
+    .js('resources/js/add_results.js', 'public/js');

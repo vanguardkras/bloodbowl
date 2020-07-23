@@ -98,6 +98,16 @@ class Team extends Model
     }
 
     /**
+     * Get current team competitions.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function competition()
+    {
+        return $this->belongsTo(Competition::class);
+    }
+
+    /**
      * Get a competition current team is applied to
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

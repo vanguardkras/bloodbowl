@@ -55,6 +55,21 @@ class PlayOff extends Type
     }
 
     /**
+     * Get list of possible opponents for the team.
+     *
+     * @param Team $team
+     * @return mixed
+     */
+    public function getPossibleOpponents(Team $team)
+    {
+        if ($this->competition->round === 0) {
+            return [];
+        }
+
+        return [$this->getPlayOffOpponent($team->id)];
+    }
+
+    /**
      * Get the max round for the competition.
      *
      * @return int

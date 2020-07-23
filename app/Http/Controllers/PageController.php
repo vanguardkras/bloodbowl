@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CompetitionTeamRegisterRequest;
 use App\Http\Requests\MatchResultsRequest;
 use App\Models\Competition;
+use App\Models\MatchLog;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -15,6 +16,7 @@ class PageController extends Controller
      *
      * @param Competition $competition
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \ReflectionException
      */
     public function competition(Competition $competition)
     {
@@ -27,10 +29,35 @@ class PageController extends Controller
 
         $competition->setStrategy();
 
-        if (auth()->check()) {
+        if (auth()->check() && !$competition->round) {
             auth()->user()->registered_team = auth()->user()->registeredTeam($competition->id);
             auth()->user()->approved_team = auth()->user()->approvedTeam($competition->id);
         }
+
+        if (auth()->check() && $competition->round) {
+            $isParticipant = auth()->user()->teams()
+                ->where('competition_id', $competition->id)->get()->isNotEmpty();
+        } else {
+            $isParticipant = false;
+        }
+
+        $unconfirmed = collect([]);
+
+        if ($competition->user_id === auth()->user()->id) {
+            $unconfirmed = $competition->matchLogs()->where('confirmed', false)
+                ->with(['teamLeft.user', 'teamRight.user'])->get();
+            $isParticipant = true;
+        } elseif ($isParticipant && $competition->self_confirm) {
+            $user_team = auth()->user()->teams()->where('competition_id', $competition->id)->first('id');
+            $unconfirmed = $competition->matchLogs()
+                ->where([['confirmed', false], ['user_id', '!=', auth()->user()->id]])
+                ->where(function ($query) use ($user_team) {
+                    $query->where('team_id_1', $user_team->id)
+                        ->orWhere('team_id_2', $user_team->id);
+                })
+                ->with(['teamLeft.user', 'teamRight.user'])->get();
+        }
+
 
         $histories = $competition
             ->histories()
@@ -38,9 +65,12 @@ class PageController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+
         return view('competition', compact([
             'competition',
-            'histories'
+            'histories',
+            'isParticipant',
+            'unconfirmed'
         ]));
     }
 
@@ -53,7 +83,17 @@ class PageController extends Controller
     public function main(Request $request)
     {
         $open_registrations = Competition::getOpenRegistration();
-        return view('main', compact('open_registrations'));
+
+        $ongoing_competitions = collect([]);
+
+        if (auth()->check()) {
+            $ongoing_competitions = auth()->user()
+                ->teams()
+                ->with('competition')
+                ->get();
+        }
+
+        return view('main', compact('open_registrations', 'ongoing_competitions'));
     }
 
     /**
@@ -69,6 +109,36 @@ class PageController extends Controller
         $this->authorize('registerTeam', $competition);
         $competition->registeredTeams()->sync([$request->team_id]);
         return back();
+    }
+
+    /**
+     * Confirm the results
+     *
+     * @param MatchLog $matchLog
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function confirmResults(MatchLog $matchLog)
+    {
+        $this->authorize('confirmRejectResults', $matchLog);
+        $matchLog->confirmed = true;
+        $matchLog->save();
+        return back()->with('success', __('competitions/management.results_confirmed'));
+    }
+
+    /**
+     * Reject the result and roll back the changes.
+     *
+     * @param MatchLog $matchLog
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
+     */
+    public function rejectResults(MatchLog $matchLog)
+    {
+        $this->authorize('confirmRejectResults', $matchLog);
+        $matchLog->reject();
+        return back()->with('success', __('competitions/management.results_deleted'));
     }
 
     /**
