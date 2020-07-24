@@ -62,14 +62,14 @@ class MatchLog extends Model
             ['team_id', $this->team_id_2],
         ])->first();
 
-        /*$score_team_1->touchdowns -= $this->score_1;
+        $score_team_1->touchdowns -= $this->score_1;
         $score_team_2->touchdowns -= $this->score_2;
         $score_team_1->touchdowns_diff -= $this->score_1 - $this->score_2;
         $score_team_2->touchdowns_diff -= $this->score_2 - $this->score_1;
         $score_team_1->score -= $this->score_1 > $this->score_2 ? $competition->winner_points : 0;
         $score_team_2->score -= $this->score_2 > $this->score_1 ? $competition->winner_points : 0;
         $score_team_1->save();
-        $score_team_2->save();*/
+        $score_team_2->save();
 
         $team_1 = Team::find($this->team_id_1);
         $team_2 = Team::find($this->team_id_2);

@@ -43,19 +43,21 @@ class PageController extends Controller
 
         $unconfirmed = collect([]);
 
-        if ($competition->user_id === auth()->user()->id) {
-            $unconfirmed = $competition->matchLogs()->where('confirmed', false)
-                ->with(['teamLeft.user', 'teamRight.user'])->get();
-            $isParticipant = true;
-        } elseif ($isParticipant && $competition->self_confirm) {
-            $user_team = auth()->user()->teams()->where('competition_id', $competition->id)->first('id');
-            $unconfirmed = $competition->matchLogs()
-                ->where([['confirmed', false], ['user_id', '!=', auth()->user()->id]])
-                ->where(function ($query) use ($user_team) {
-                    $query->where('team_id_1', $user_team->id)
-                        ->orWhere('team_id_2', $user_team->id);
-                })
-                ->with(['teamLeft.user', 'teamRight.user'])->get();
+        if (auth()->check()) {
+            if ($competition->user_id === auth()->user()->id) {
+                $unconfirmed = $competition->matchLogs()->where('confirmed', false)
+                    ->with(['teamLeft.user', 'teamRight.user'])->get();
+                $isParticipant = true;
+            } elseif ($isParticipant && $competition->self_confirm) {
+                $user_team = auth()->user()->teams()->where('competition_id', $competition->id)->first('id');
+                $unconfirmed = $competition->matchLogs()
+                    ->where([['confirmed', false], ['user_id', '!=', auth()->user()->id]])
+                    ->where(function ($query) use ($user_team) {
+                        $query->where('team_id_1', $user_team->id)
+                            ->orWhere('team_id_2', $user_team->id);
+                    })
+                    ->with(['teamLeft.user', 'teamRight.user'])->get();
+            }
         }
 
 
