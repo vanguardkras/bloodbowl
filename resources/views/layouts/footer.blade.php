@@ -6,30 +6,28 @@
                 <div class="col-md-3 footer-about wow fadeInUp">
                     <h1>BBTS</h1>
                     <p>
-                        Система проведения турниров различных форматов для настольной и компьютерной версий
-                        игры Blood Bowl.
+                        {{ __('footer.info_1') }}
                     </p>
                     <p>
-                        Система является некоммерческой разработкой. Если вы обнаружили неисправность, пожалуйста,
-                        сообщите по указанным контактным данным.
+                        {{ __('footer.info_2') }}
                     </p>
                 </div>
                 <div class="col-md-4 offset-md-1 footer-contact wow fadeInDown">
-                    <h3>Контакты</h3>
+                    <h3>{{ __('footer.contacts') }}</h3>
                     <p>Email: <a href="mailto:vanguardkras@gmail.com">vanguardkras@gmail.com</a></p>
                     <p></i> Telegram: <a href="https://teleg.run/vanguardkras">vanguardkras</a></p>
                 </div>
                 <div class="col-md-4 footer-links wow fadeInUp">
                     <div class="row">
                         <div class="col">
-                            <h3>Ссылки</h3>
+                            <h3>{{ __('footer.links') }}</h3>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <p><a href="/">Главная</a></p>
-                            <p><a href="/teams">Команды</a></p>
-                            <p><a href="/profile">Профиль</a></p>
+                            <p><a href="/">{{ __('footer.main') }}</a></p>
+                            <p><a href="/teams">{{ __('footer.teams') }}</a></p>
+                            <p><a href="/profile">{{ __('footer.profile') }}</a></p>
                         </div>
                         <div class="col-md-6">
                             <form method="POST" action="https://money.yandex.ru/quickpay/confirm.xml">
@@ -51,7 +49,7 @@
                                 @else
                                     <input type="hidden" name="sum" value="200">
                                 @endif
-                                <button class="w-100 btn btn-success" type="submit">Поддержать</button>
+                                <button class="w-100 btn btn-success" type="submit">{{ __('footer.support') }}</button>
                             </form>
                         </div>
                     </div>
