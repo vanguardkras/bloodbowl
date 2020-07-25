@@ -29,7 +29,7 @@
             @auth
                 @if ($ongoing_competitions->isNotEmpty())
                     <hr>
-                    <h3 class="text-info mt-2">Вы принимаете участие</h3>
+                    <h3 class="text-info mt-2">{{ __('main.you_take_part') }}</h3>
                     <table class="table table-sm">
                         <thead>
                         <tr>
@@ -58,16 +58,16 @@
         </div>
         <div class="col-lg-6 col-md-12">
             {!! __('news.main') !!}
-            @if (app()->getLocale() === 'ru')
-                <div class="mt-3">
-                    <h2>Инструкция</h2>
-                    <div class="text-center">
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/LBBJsOADWZQ" frameborder="0"
-                                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen></iframe>
-                    </div>
+            <div class="mt-3">
+                <h2>{{ __('general.instruction') }}</h2>
+                <div class="text-center">
+                    <iframe width="560" height="315"
+                            src="https://www.youtube.com/embed/{{ (app()->getLocale() === 'ru') ? 'LBBJsOADWZQ' : 'AMjRACCvjV0' }} "
+                            frameborder="0"
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
                 </div>
-            @endif
+            </div>
         </div>
     </div>
 @endsection

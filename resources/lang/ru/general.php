@@ -12,4 +12,5 @@ return [
     'reject' => 'Отменить',
     'score' => 'Счет',
     'actions' => 'Действия',
+    'instruction' => 'Инструкция'
 ];

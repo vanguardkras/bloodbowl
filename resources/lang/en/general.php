@@ -12,4 +12,5 @@ return [
     'reject' => 'Reject',
     'score' => 'Score',
     'actions' => 'Actions',
+    'instruction' => 'Instruction'
 ];

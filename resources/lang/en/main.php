@@ -5,4 +5,5 @@ return [
     'name' => 'Name',
     'type' => 'Type',
     'registration_end' => 'Registration ends',
+    'you_take_part' => 'Competitions of your teams'
 ];
