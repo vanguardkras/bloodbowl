@@ -132,6 +132,10 @@ class CompetitionPolicy
      */
     public function registerTeam(User $user, Competition $competition)
     {
+        if ($competition->type === 'open_league' && !$competition->registration_end) {
+            return true;
+        }
+
         return !$competition->finished
             && today()->toDateString() <= $competition->registration_end;
 

@@ -58,4 +58,5 @@ return [
     'success_message' => 'Соревнование ":name" было успешно создано',
     'success_edit_message' => 'Данные соревнования ":name" были успешно обновлены',
     'edit_competition' => 'Сохранить изменения',
+    'open_registration_date' => 'Открытая регистрация',
 ];

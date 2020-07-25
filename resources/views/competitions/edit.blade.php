@@ -42,10 +42,24 @@
 
                     {{-- Registration end --}}
                     <label for="registration_end">{{ __('competitions/create.registration_end') }}</label>
+
+                    @if ($competition->type === 'open_league')
+                        <div class="form-check edit-page" id="open_registration_form">
+                            <input type="checkbox" name="open_registration"
+                                   class="form-check-input" id="open_registration" value="1"
+                                {{ !$competition->registration_end ? 'checked' : '' }}>
+                            <label class="form-check-label" for="open_registration">
+                                {{ __('competitions/create.open_registration_date') }}
+                            </label>
+                        </div>
+                    @endif
+
                     <input type="date"
-                           class="@error('registration_end') is-invalid @enderror form-control"
+                           class="@error('registration_end') is-invalid @enderror
+                               form-control
+                               {{ !$competition->registration_end ? 'd-none' : '' }}"
                            id="registration_end" name="registration_end"
-                           value="{{ $competition->registration_end }}"
+                           value="{{ $competition->registration_end ?? today()->addDay()->toDateString() }}"
                            min="{{ today()->addDay()->toDateString() }}"
                            required>
                     <p class="small">

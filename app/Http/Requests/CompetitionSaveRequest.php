@@ -46,6 +46,7 @@ class CompetitionSaveRequest extends FormRequest
             'name' => 'required_unless:request,edit|max:255|unique:competitions,name',
             'info' => 'max:1000',
             'registration_end' => 'required|date|after:today',
+            'open_registration' => 'sometimes',
             'self_confirm' => 'required|integer|min:0|max:3',
             'any_max_teams' => 'boolean',
             'max_teams' => 'integer|min:2|max:1024',

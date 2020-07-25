@@ -59,9 +59,9 @@
                         ({{ $trophy->team->race->name() }})
                     </p>
                 @endforeach
-            @elseif ($competition->round)
+            @elseif ($competition->round && $competition->type !== 'open_league' && $competition->registration_end)
 
-            @elseif (today()->toDateString() > $competition->registration_end)
+            @elseif (today()->toDateString() > $competition->registration_end && $competition->type !== 'open_league' && $competition->registration_end)
                 <p class="text-danger">{{ __('competitions/show_public.reg_over') }}</p>
             @elseif (auth()->guest())
                 <p>{{ __('competitions/show_public.guest_info') }}</p>
@@ -95,7 +95,7 @@
                                 @endif
                             @endforeach
                         </select>
-                        <div class="mt-2">
+                        <div class="my-2">
                             <button type="submit" class="btn
                                 @if (auth()->user()->registered_team) btn-secondary @else btn-primary @endif">
                                 {{ __('competitions/show_public.apply') }}

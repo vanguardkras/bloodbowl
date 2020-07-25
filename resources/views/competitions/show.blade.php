@@ -34,7 +34,7 @@
     @endif
     <div class="row">
         <div class="col-lg-6 col-md-12">
-            @if (!$competition->round)
+            @if (!$competition->round || ($competition->type === 'open_league' && !$competition->registration_end && $competition->round === 1))
                 <h3 class="my-3">{{ __('competitions/management.applications') }}</h3>
                 <table class="table table-borderless table-primary table-sm table-striped">
                     <thead class="thead-dark">
@@ -70,30 +70,33 @@
                     @endforeach
                     </tbody>
                 </table>
-                <hr>
-                <h3 class="my-3">{{ __('competitions/management.registered_teams') }}</h3>
-                <table class="table table-borderless table-info table-sm table-striped">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>{{ __('competitions/management.name') }}</th>
-                        <th>{{ __('competitions/management.race') }}</th>
-                        <th>{{ __('competitions/management.coach') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach ($competition->teams as $team)
+
+                @if (!($competition->round && $competition->type === 'open_league' && !$competition->registration_end && $competition->round === 1))
+                    <hr>
+                    <h3 class="my-3">{{ __('competitions/management.registered_teams') }}</h3>
+                    <table class="table table-borderless table-info table-sm table-striped">
+                        <thead class="thead-dark">
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td><a href="/teams/{{ $team->id }}">{{ $team->name }}</a></td>
-                            <td>{{ $team->race->name }}</td>
-                            <td>
-                                <a href="/user/{{ $team->user->id }}">{{ $team->user->username ?: __('auth.nameless_user') }}</a>
-                            </td>
+                            <th>#</th>
+                            <th>{{ __('competitions/management.name') }}</th>
+                            <th>{{ __('competitions/management.race') }}</th>
+                            <th>{{ __('competitions/management.coach') }}</th>
                         </tr>
-                    @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        @foreach ($competition->teams as $team)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td><a href="/teams/{{ $team->id }}">{{ $team->name }}</a></td>
+                                <td>{{ $team->race->name }}</td>
+                                <td>
+                                    <a href="/user/{{ $team->user->id }}">{{ $team->user->username ?: __('auth.nameless_user') }}</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @endif
             @endif
         </div>
     </div>
@@ -116,11 +119,19 @@
         <tbody>
         @foreach ($histories as $history)
             <tr>
-                <td><a href="/user/{{ $history->team_1->user->id }}">{{ $history->team_1->user->name ?? __('auth.nameless_user') }}</a></td>
-                <td><a href="/teams/{{ $history->team_1->id }}">{{ $history->team_1->name }}</a> ({{ $history->race_1->name() }})</td>
+                <td>
+                    <a href="/user/{{ $history->team_1->user->id }}">{{ $history->team_1->user->name ?? __('auth.nameless_user') }}</a>
+                </td>
+                <td><a href="/teams/{{ $history->team_1->id }}">{{ $history->team_1->name }}</a>
+                    ({{ $history->race_1->name() }})
+                </td>
                 <td>{{ $history->score_1 }} : {{ $history->score_2 }}</td>
-                <td><a href="/teams/{{ $history->team_1->id }}">{{ $history->team_2->name }}</a> ({{ $history->race_2->name() }})</td>
-                <td><a href="/user/{{ $history->team_2->user->id }}">{{ $history->team_2->user->name ?? __('auth.nameless_user') }}</a></td>
+                <td><a href="/teams/{{ $history->team_1->id }}">{{ $history->team_2->name }}</a>
+                    ({{ $history->race_2->name() }})
+                </td>
+                <td>
+                    <a href="/user/{{ $history->team_2->user->id }}">{{ $history->team_2->user->name ?? __('auth.nameless_user') }}</a>
+                </td>
                 <td>{{ $history->date }}</td>
             </tr>
         @endforeach

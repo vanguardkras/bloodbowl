@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CompetitionSaveRequest;
 use App\Models\Competition;
+use App\Models\Score;
 use App\Models\Team;
 use App\Services\ImageUploader;
 use Illuminate\Http\Request;
@@ -52,6 +53,8 @@ class CompetitionController extends Controller
         $competition->fillParameters();
         $competition->user_id = auth()->user()->id;
         $competition->max_teams = $request->filled('any_max_teams') ? 0 : $request->max_teams;
+        $competition->registration_end = $request->filled('open_registration')
+            ? null : $request->registration_end;
 
         if ($request->hasFile('logo')) {
             $competition->logo = ImageUploader::store('logo', 'competitions_logo');
@@ -126,6 +129,8 @@ class CompetitionController extends Controller
     {
         $competition->fill($request->all());
         $competition->max_teams = $request->filled('any_max_teams') ? 0 : $request->max_teams;
+        $competition->registration_end = $request->filled('open_registration')
+            ? null : $request->registration_end;
         $competition->fillParameters();
 
         if ($request->hasFile('logo')) {
@@ -135,7 +140,7 @@ class CompetitionController extends Controller
         $competition->save();
         $competition->races()->sync(array_values($request->races));
 
-        return back()->with('success', __('competitions/create.success_edit_message'));
+        return back()->with('success', __('competitions/create.success_edit_message', ['name' => $competition->name]));
     }
 
     /**
@@ -197,6 +202,20 @@ class CompetitionController extends Controller
         if ($request->action === 'approve') {
             $team->competition_id = $competition->id;
             $team->save();
+
+            // Open registration functionality
+            if ($competition->round &&
+                $competition->type === 'open_league' &&
+                !$competition->registration_end &&
+                $competition->round === 1
+            )
+            {
+                $score = new Score;
+                $score->competition_id = $competition->id;
+                $score->round = 1;
+                $score->team_id = $team->id;
+                $score->save();
+            }
         }
 
         $competition->registeredTeams()->detach($team);

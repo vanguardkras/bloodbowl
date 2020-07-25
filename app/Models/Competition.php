@@ -51,7 +51,6 @@ class Competition extends Model
     protected $fillable = [
         'name',
         'info',
-        'registration_end',
         'self_confirm',
         'winner_points',
         'tops_number',

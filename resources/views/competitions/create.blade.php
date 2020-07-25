@@ -45,13 +45,25 @@
 
                     {{-- Registration end --}}
                     <label for="registration_end">{{ __('competitions/create.registration_end') }}</label>
+
+                    <div class="form-check d-none" id="open_registration_form">
+                        <input type="checkbox" name="open_registration"
+                               class="form-check-input" id="open_registration" value="1"
+                            {{ old('open_registration') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="open_registration">
+                            {{ __('competitions/create.open_registration_date') }}
+                        </label>
+                    </div>
+
                     <input type="date"
-                           class="@error('registration_end') is-invalid @enderror form-control"
+                           class="@error('registration_end') is-invalid @enderror
+                               form-control
+                               {{ old('open_registration') ? 'd-none' : '' }}"
                            id="registration_end" name="registration_end"
                            value="{{ old('registration_end', today()->addDay()->toDateString()) }}"
                            min="{{ today()->addDay()->toDateString() }}"
                            required>
-                    <p class="small">
+                    <p class="small" id="open_registration_desc">
                         {{ __('competitions/create.registration_end_desc') }}
                     </p>
                     @include('helpers.input_error', ['field_name' => 'registration_end'])

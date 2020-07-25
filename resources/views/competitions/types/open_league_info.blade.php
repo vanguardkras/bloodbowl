@@ -14,3 +14,9 @@
     <b>{{ __('competitions/create.open_league.play_off_num') }}</b>
     {{ $competition->parameters->open_league_play_off ?: __('competitions/create.open_league.wo_po') }}
 </li>
+@if (!$competition->registration_end)
+    <li class="list-group-item py-0">
+        <b>{{ __('competitions/create.open_registration_date') }}</b>
+        {{ __('general.yes') }}
+    </li>
+@endif

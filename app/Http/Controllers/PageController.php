@@ -29,7 +29,7 @@ class PageController extends Controller
 
         $competition->setStrategy();
 
-        if (auth()->check() && !$competition->round) {
+        if (auth()->check() && (!$competition->round || ($competition->type === 'open_league' && !$competition->registration_end))) {
             auth()->user()->registered_team = auth()->user()->registeredTeam($competition->id);
             auth()->user()->approved_team = auth()->user()->approvedTeam($competition->id);
         }

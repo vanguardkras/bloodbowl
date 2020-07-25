@@ -58,4 +58,5 @@ return [
     'success_message' => 'Competition ":name" has been successfully created',
     'success_edit_message' => 'Competition ":name" data has been successfully updated',
     'edit_competition' => 'Save changes',
+    'open_registration_date' => 'Open Registration Date',
 ];
