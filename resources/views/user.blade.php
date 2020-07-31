@@ -18,6 +18,6 @@
     <div><strong>{{ __('coach.touchdowns') }}:</strong> {{ $user->teams->sum('touchdowns') }}</div>
     <div>
         <strong>{{ __('coach.success_rate') }}:</strong>
-        {{ $user->teams->sum('played') ? ($user->teams->sum('wins') + $user->teams->sum('draws') * 100) / $user->teams->sum('played') . '%': 'Нет данных' }}
+        {{ $user->teams->sum('played') ? (($user->teams->sum('wins') + $user->teams->sum('draws')) * 100) / $user->teams->sum('played') . '%': 'Нет данных' }}
     </div>
 @endsection
