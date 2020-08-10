@@ -71,11 +71,7 @@
             @elseif (auth()->guest())
                 <p>{{ __('competitions/show_public.guest_info') }}</p>
                 <a href="/register" class="btn btn-primary">{{ __('competitions/show_public.register') }}</a>
-            @elseif (auth()->user()->getAvailableTeamsByRaces($competition->races)->isEmpty())
-                <p class="small mb-0">{{ __('competitions/show_public.no_teams') }}</p>
-                <p><a href="/teams/create"
-                      class="btn btn-primary btn-sm">{{ __('competitions/show_public.create_team') }}</a></p>
-            @elseif (auth()->user()->getAvailableTeamsByRaces($competition->races)->isNotEmpty())
+            @elseif (auth()->user()->getAvailableTeamsByRaces($competition->races)->isNotEmpty() || auth()->user()->registered_team || auth()->user()->approved_team)
                 <form action="/competitions/{{ $competition->id }}/register_team" method="post">
                     @csrf
                     <label for="team_id">
