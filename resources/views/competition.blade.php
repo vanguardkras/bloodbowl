@@ -16,19 +16,24 @@
                 <b>{{ __('competitions/show_public.type') }}
                     :</b> {{ __('competitions/create.types.' . $competition->type) }}
             </p>
-            <p class="mb-1">
-                <b>{{ __('competitions/show_public.participants') }}:</b> {{ $competition->teams()->count() }}
-            </p>
-            <p class="mb-1">
-                <b>{{ __('competitions/show_public.reg_requests') }}:</b> {{ $competition->registeredTeams()->count() }}
-            </p>
-            <p>
-                @if ($competition->round)
-                    <b>{{ __('competitions/show_public.current_round') }}:</b> {{ $competition->round }}
-                @else
-                    <b>{{ __('competitions/show_public.reg_end') }}:</b> {{ $competition->registration_end }}
+            @if (!$competition->finished)
+                <p class="mb-1">
+                    <b>{{ __('competitions/show_public.participants') }}:</b> {{ $competition->teams()->count() }}
+                </p>
+                @if (!$competition->round)
+                    <p class="mb-1">
+                        <b>{{ __('competitions/show_public.reg_requests') }}
+                            :</b> {{ $competition->registeredTeams()->count() }}
+                    </p>
                 @endif
-            </p>
+                <p>
+                    @if ($competition->round)
+                        <b>{{ __('competitions/show_public.current_round') }}:</b> {{ $competition->round }}
+                    @else
+                        <b>{{ __('competitions/show_public.reg_end') }}:</b> {{ $competition->registration_end }}
+                    @endif
+                </p>
+            @endif
         </div>
         <div class="col-md-6 col-sm-12">
             <h5>{{ __('competitions/show_public.info') }}</h5>
@@ -109,9 +114,11 @@
 
     {{-- Section of the started competition --}}
     @include('helpers.confirm_results')
-    @if ($isParticipant)
+
+    @if ($isParticipant && !$competition->finished)
         @include('helpers.add_results')
     @endif
+
     {{-- Competition information section --}}
     @if ($competition->round)
         @include('competitions.types.' . $competition->type . '_data')
@@ -119,39 +126,7 @@
 
     {{-- History section --}}
     @if ($competition->round)
-        <h3 class="mt-4">{{ __('competitions/main.history') }}</h3>
-        <table class="table mx-auto table-sm table-striped" id="history">
-            <thead>
-            <tr>
-                <th scope="col">{{ __('competitions/main.coach') }} 1</th>
-                <th scope="col">{{ __('competitions/main.team') }} 1</th>
-                <th scope="col">{{ __('competitions/main.score') }}</th>
-                <th scope="col">{{ __('competitions/main.team') }} 2</th>
-                <th scope="col">{{ __('competitions/main.coach') }} 2</th>
-                <th scope="col">{{ __('competitions/main.date') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach ($histories as $history)
-                <tr>
-                    <td>
-                        <a href="/user/{{ $history->team_1->user->id }}">{{ $history->team_1->user->name ?? __('auth.nameless_user') }}</a>
-                    </td>
-                    <td><a href="/teams/{{ $history->team_1->id }}">{{ $history->team_1->name }}</a>
-                        ({{ $history->race_1->name() }})
-                    </td>
-                    <td>{{ $history->score_1 }} : {{ $history->score_2 }}</td>
-                    <td><a href="/teams/{{ $history->team_1->id }}">{{ $history->team_2->name }}</a>
-                        ({{ $history->race_2->name() }})
-                    </td>
-                    <td>
-                        <a href="/user/{{ $history->team_2->user->id }}">{{ $history->team_2->user->name ?? __('auth.nameless_user') }}</a>
-                    </td>
-                    <td>{{ $history->date }}</td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
+        @include('helpers.histories')
     @endif
 @endsection
 

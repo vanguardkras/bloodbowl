@@ -166,3 +166,10 @@ textarea {
     color: #aaa;
     border: 0;
 }
+
+@media (max-width: 576px) {
+    .responsive_text {
+        font-size: 70%;
+        font-weight: 400;
+    }
+}

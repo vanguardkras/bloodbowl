@@ -104,39 +104,10 @@
         @include('competitions.types.' . $competition->type . '_data')
     @endif
 
-    <h3 class="mt-4">{{ __('competitions/main.history') }}</h3>
-    <table class="table mx-auto table-sm table-striped" id="history">
-        <thead>
-        <tr>
-            <th scope="col">{{ __('competitions/main.coach') }} 1</th>
-            <th scope="col">{{ __('competitions/main.team') }} 1</th>
-            <th scope="col">{{ __('competitions/main.score') }}</th>
-            <th scope="col">{{ __('competitions/main.team') }} 2</th>
-            <th scope="col">{{ __('competitions/main.coach') }} 2</th>
-            <th scope="col">{{ __('competitions/main.date') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach ($histories as $history)
-            <tr>
-                <td>
-                    <a href="/user/{{ $history->team_1->user->id }}">{{ $history->team_1->user->name ?? __('auth.nameless_user') }}</a>
-                </td>
-                <td><a href="/teams/{{ $history->team_1->id }}">{{ $history->team_1->name }}</a>
-                    ({{ $history->race_1->name() }})
-                </td>
-                <td>{{ $history->score_1 }} : {{ $history->score_2 }}</td>
-                <td><a href="/teams/{{ $history->team_1->id }}">{{ $history->team_2->name }}</a>
-                    ({{ $history->race_2->name() }})
-                </td>
-                <td>
-                    <a href="/user/{{ $history->team_2->user->id }}">{{ $history->team_2->user->name ?? __('auth.nameless_user') }}</a>
-                </td>
-                <td>{{ $history->date }}</td>
-            </tr>
-        @endforeach
-        </tbody>
-    </table>
+    {{-- History section --}}
+    @if ($competition->round)
+        @include('helpers.histories')
+    @endif
 
 @endsection
 

@@ -7,4 +7,9 @@ $(document).ready(function () {
         options = {"language": {"url": "/js/datatables_ru.json"}}
     }
     $('#statistics, #archive, #history').DataTable(options);
+
+    options.paging = false;
+    options.info = false;
+    options.searching = false;
+    $('#open_league').DataTable(options);
 });

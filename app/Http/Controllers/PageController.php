@@ -67,7 +67,6 @@ class PageController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-
         return view('competition', compact([
             'competition',
             'histories',

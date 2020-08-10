@@ -41,12 +41,15 @@ class Team extends Model
     }
 
     /**
+     * Calculate number of matches played
+     *
+     * @param int $competition_id
      * @return int
      */
-    public function getTotalMatchesOpenLeagueAttribute()
+    public function countHistoriesOpenLeague(int $competition_id)
     {
-        return $this->matchLogLeft()->where('round', 1)->count() +
-            $this->matchLogRight()->where('round', 1)->count();
+        return $this->historyLogLeft()->where([['competition_id', $competition_id]])->count() +
+            $this->historyLogRight()->where([['competition_id', $competition_id]])->count();
     }
 
     /**
@@ -135,6 +138,26 @@ class Team extends Model
     public function matchLogRight()
     {
         return $this->hasMany(MatchLog::class, 'team_id_2');
+    }
+
+    /**
+     * History where the team is team_id_1
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function historyLogLeft()
+    {
+        return $this->hasMany(History::class, 'team_id_1');
+    }
+
+    /**
+     * History where the team is team_id_2
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function historyLogRight()
+    {
+        return $this->hasMany(History::class, 'team_id_2');
     }
 
     /**

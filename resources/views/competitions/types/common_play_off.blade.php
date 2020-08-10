@@ -1,6 +1,6 @@
 <div class="shadow-lg p-3">
     <h1>{{ __('competitions/main.play_off_header') }}</h1>
-    <table class="table table-sm">
+    <table class="table table-sm responsive_text">
         @for ($row = 0; $row < $playOffRounds; $row++)
             <tr>
                 @for ($col = 0; $col <= $lastRound; $col++)
