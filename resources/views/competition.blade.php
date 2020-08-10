@@ -75,7 +75,7 @@
                 <p class="small mb-0">{{ __('competitions/show_public.no_teams') }}</p>
                 <p><a href="/teams/create"
                       class="btn btn-primary btn-sm">{{ __('competitions/show_public.create_team') }}</a></p>
-            @else
+            @elseif (auth()->user()->getAvailableTeamsByRaces($competition->races)->isNotEmpty())
                 <form action="/competitions/{{ $competition->id }}/register_team" method="post">
                     @csrf
                     <label for="team_id">
@@ -108,6 +108,10 @@
                         </div>
                     @endif
                 </form>
+            @else
+                <p class="small mb-0">{{ __('competitions/show_public.no_teams') }}</p>
+                <p><a href="/teams/create"
+                      class="btn btn-primary btn-sm">{{ __('competitions/show_public.create_team') }}</a></p>
             @endif
         </div>
     </div>
