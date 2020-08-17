@@ -95,6 +95,7 @@ class PageController extends Controller
         }
 
         $recent_competitions = Competition::select(['id', 'name', 'logo', 'type'])
+            ->where('finished', '!=', null)
             ->orderBy('finished', 'desc')
             ->limit(5)->get();
 
