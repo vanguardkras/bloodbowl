@@ -55,6 +55,20 @@
                     </table>
                 @endif
             @endauth
+            <h3 class="text-info mt-4">Недавние завершенные турниры</h3>
+            <table class="table table-sm">
+                <tbody>
+                @foreach ($recent_competitions as $recent_competition)
+                    <tr>
+                        <td class="align-middle"><a href="/competitions/{{ $recent_competition->id }}/show">
+                                <img style="width: 30px;" src="{{ $recent_competition->logo() }}" alt="logo">
+                                {{ $recent_competition->name }}
+                            </a></td>
+                        <td class="align-middle">{{ __('competitions/main.' . $recent_competition->type) }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
         </div>
         <div class="col-lg-6 col-md-12">
             {!! __('news.main') !!}

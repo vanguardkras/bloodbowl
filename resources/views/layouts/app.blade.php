@@ -23,7 +23,6 @@
     @yield('includes', '')
 </head>
 <body>
-
 @include('layouts.menu')
 
 <main class="py-4 container">

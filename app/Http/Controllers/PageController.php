@@ -94,7 +94,11 @@ class PageController extends Controller
                 ->get();
         }
 
-        return view('main', compact('open_registrations', 'ongoing_competitions'));
+        $recent_competitions = Competition::select(['id', 'name', 'logo', 'type'])
+            ->orderBy('registration_end', 'desc')
+            ->limit(5)->get();
+
+        return view('main', compact('open_registrations', 'ongoing_competitions', 'recent_competitions'));
     }
 
     /**

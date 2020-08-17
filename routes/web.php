@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('get_possible_opponents/{competition}/{team}', 'AddResultsAjaxController@getPossibleOpponents');
 });
 
-//Competitons routes
+//Competitions routes
 Route::middleware('commissioner')->group(function () {
     Route::resource('competitions', 'CompetitionController');
     Route::post('register/{competition}/{team}', 'CompetitionController@registerTeam');
