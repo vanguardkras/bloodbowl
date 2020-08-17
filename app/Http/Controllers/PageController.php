@@ -95,7 +95,7 @@ class PageController extends Controller
         }
 
         $recent_competitions = Competition::select(['id', 'name', 'logo', 'type'])
-            ->orderBy('registration_end', 'desc')
+            ->orderBy('finished', 'desc')
             ->limit(5)->get();
 
         return view('main', compact('open_registrations', 'ongoing_competitions', 'recent_competitions'));
