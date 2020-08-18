@@ -7,6 +7,7 @@
             <th class="d-sm-table-cell d-none">{{ __('competitions/types/group_rounds.coach') }}</th>
             <th>{{ __('competitions/types/group_rounds.matches_played') }}</th>
             <th class="d-sm-table-cell d-none">{{ __('competitions/types/group_rounds.touchdowns') }}</th>
+            <th class="d-sm-table-cell d-none">TD diff</th>
             <th>{{ __('competitions/types/group_rounds.points') }}</th>
         </tr>
         </thead>
@@ -25,6 +26,7 @@
                 </td>
                 <td>{{ $score->team->countHistoriesOpenLeague($competition->id) }}</td>
                 <td class="d-sm-table-cell d-none">{{ $score->touchdowns }}</td>
+                <td class="d-sm-table-cell d-none">{{ $score->touchdowns_diff }}</td>
                 <td class="font-weight-bold text-success">{{ $score->score }}</td>
             </tr>
         @endforeach
