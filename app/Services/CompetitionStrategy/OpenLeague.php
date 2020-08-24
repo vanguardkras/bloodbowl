@@ -338,7 +338,9 @@ class OpenLeague extends Type
         if ($this->competition->tops_number <= $po_teams) {
             $this->createPlayOffTrophies();
         } else {
-            $this->createPlayOffTrophies($po_teams);
+            if ($po_teams > 0) {
+                $this->createPlayOffTrophies($po_teams);
+            }
             $scores = $this->competition->scores()
                 ->where('round', 1)
                 ->orderBy('score', 'DESC')
